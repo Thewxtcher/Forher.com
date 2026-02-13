@@ -1,107 +1,124 @@
-/* Universal Resets */
+/* =========================================
+   ARCHIVE ENGINE — CINEMATIC CRIMSON BUILD
+   ========================================= */
+
+/* RESET */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* ROOT VARIABLES */
 :root {
-    --dark-void: #0A0A0A; /* Deepest black */
-    --layered-dark: #1A1A1A; /* Slightly lighter for backgrounds */
-    --glass-dark: rgba(26, 26, 26, 0.7); /* For glass-like elements */
-    --crimson-red: #CC0000;
-    --crimson-glow-start: rgba(204, 0, 0, 0.4);
-    --crimson-glow-end: rgba(204, 0, 0, 0.8);
-    --subtle-gray: #888888;
-    --text-light: #E0E0E0;
-    --glitch-color: #00FFFF; /* Cyan for glitch effect */
-    --nav-height: 60px;
-    --success-c2: #66ff66; /* Your original success color */
-    --error-c2: #ff6666;   /* Your original error color */
+    --void: #050505; /* Deepest black */
+    --deep-layer: #111111; /* Slightly lighter for backgrounds */
+    --glass: rgba(20, 20, 20, 0.65); /* For glass-like elements */
+    --crimson: #ff1a1a; /* Bright, vibrant crimson */
+    --crimson-soft: rgba(255, 0, 0, 0.4);
+    --crimson-strong: rgba(255, 0, 0, 0.9);
+    --cyan-glitch: #00ffff;
+    --text-light: #f0f0f0;
+    --gray: #777;
+    /* C2 Status Colors - Preserving original green/red but within theme */
+    --success-c2: #66ff66;
+    --error-c2: #ff6666;
+
+    /* Mouse position for cinematic light follow */
+    --mouse-x: 50%;
+    --mouse-y: 50%;
 }
 
+/* BASE */
 html {
     scroll-behavior: smooth;
 }
 
 body {
-    font-family: 'Montserrat', sans-serif; /* Default body font for Archive theme */
-    background-color: var(--dark-void);
+    font-family: 'Montserrat', sans-serif;
+    background: var(--void);
     color: var(--text-light);
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
     min-height: 100vh;
     position: relative;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23CC0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>') 12 12, auto;
+    /* Thematic custom cursor from previous iteration, overriding crosshair */
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ff1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>') 12 12, auto;
 }
 
-/* Atmospheric Overlays */
-#vignette {
+/* =========================================
+   CINEMATIC LIGHT FOLLOW SYSTEM
+   ========================================= */
+
+body::after {
+    content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8); /* Darkens corners */
+    inset: 0;
     pointer-events: none;
-    z-index: 99; /* Above other content but below modals */
+    background: radial-gradient(
+        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(255, 0, 0, 0.08), /* Soft crimson glow from mouse */
+        transparent 40%
+    );
+    mix-blend-mode: overlay; /* Creates depth and light interaction */
+    transition: background 0.15s ease; /* Smooth follow */
+    z-index: 2;
 }
 
-#ambient-haze {
+/* =========================================
+   AMBIENT VOID TEXTURE
+   ========================================= */
+
+body::before {
+    content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, rgba(204, 0, 0, 0.05) 0%, rgba(204, 0, 0, 0) 50%);
-    animation: subtleHaze 20s infinite alternate ease-in-out;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,0,0,0.05), transparent 40%), /* Subtle red haze like smoke */
+        radial-gradient(circle at 80% 70%, rgba(255,0,0,0.03), transparent 50%), /* Another haze layer */
+        /* Tiny crimson particles float upward slowly */
+        url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='); /* Transparent 1x1 pixel base for particle background */
+    background-size: 100% 100%, 100% 100%, 10px 10px; /* Haze and particle size */
+    animation: ambientShift 20s infinite alternate ease-in-out, particleFloat 40s linear infinite;
+    z-index: -2;
+    opacity: 0.8;
     pointer-events: none;
-    z-index: -1; /* Behind everything */
-    opacity: 0.7;
 }
 
-@keyframes subtleHaze {
-    0% { transform: scale(1); opacity: 0.05; }
-    50% { transform: scale(1.1) translateX(5%) translateY(-5%); opacity: 0.08; }
-    100% { transform: scale(1); opacity: 0.05; }
+@keyframes ambientShift {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) translateX(3%) translateY(-3%); }
+    100% { transform: scale(1); }
 }
 
-#crimson-particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -2; /* Even further behind */
-    background: transparent;
-    overflow: hidden;
+@keyframes particleFloat {
+    0% { background-position: 0% 100%, 0% 100%, 0px 0px; }
+    100% { background-position: 0% 0%, 0% 0%, 0px -200vh; } /* Particles float upwards */
 }
 
-#crimson-particles::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, var(--crimson-red) 1px, transparent 1px);
-    background-size: 100px 100px; /* Adjust particle density */
-    opacity: 0.1;
-    animation: particleDrift 30s linear infinite;
-    filter: blur(0.5px); /* Soften particles */
+/* =========================================
+   HDR GLOW SYSTEM
+   ========================================= */
+
+.hdr-glow {
+    box-shadow:
+        0 0 5px var(--crimson),
+        0 0 15px var(--crimson),
+        0 0 30px var(--crimson),
+        0 0 60px rgba(255,0,0,0.6);
+    transition: box-shadow 0.3s ease; /* For hover effects */
 }
 
-@keyframes particleDrift {
-    0% { transform: translateY(100vh) scale(1.5); }
-    100% { transform: translateY(-100vh) scale(0.5); }
-}
+/* =========================================
+   INTRO SCREEN & ARCHIVE TITLE
+   ========================================= */
 
-/* Intro Screen */
 #intro-screen {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: var(--dark-void);
+    background-color: var(--void);
     position: fixed;
     top: 0;
     left: 0;
@@ -127,77 +144,158 @@ body {
 
 #archive-title {
     font-family: 'Cinzel Decorative', serif;
-    font-size: 5em;
-    color: var(--crimson-red);
-    text-shadow: 0 0 15px var(--crimson-glow-start);
+    font-size: 5rem;
     letter-spacing: 5px;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: textFadeIn 2s 1s forwards;
+    color: var(--crimson);
     position: relative;
+    text-shadow:
+        0 0 5px var(--crimson),
+        0 0 20px var(--crimson),
+        0 0 40px var(--crimson);
+    opacity: 0; /* Initial opacity for JS animation */
+    animation: textFadeIn 2s 1s forwards; /* For delayed fade-in after body */
 }
 
-.gothic-text {
-    font-family: 'Cinzel Decorative', serif;
-    letter-spacing: 2px;
+/* Glitch System for Titles */
+.glitch {
+    position: relative;
+    animation: textGlitchFlicker 1.5s infinite alternate steps(2, end); /* Faint glitch flicker */
 }
 
-@keyframes textFadeIn {
+@keyframes textGlitchFlicker {
+    0%, 100% { text-shadow: 0 0 5px var(--crimson), 0 0 20px var(--crimson), 0 0 40px var(--crimson); }
+    50% { text-shadow: 0 0 5px var(--crimson), 0 0 20px var(--crimson), 0 0 40px var(--crimson),
+                       -1px 1px 0 var(--cyan-glitch), 1px -1px 0 var(--crimson); }
+}
+
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    /* Initial state, JS can trigger animation */
+}
+
+.glitch.active::before {
+    color: var(--cyan-glitch);
+    transform: translate(-2px, -2px);
+    mix-blend-mode: screen;
+    animation: glitchEffect 0.7s infinite alternate-reverse;
+}
+
+.glitch.active::after {
+    color: var(--crimson);
+    transform: translate(2px, 2px);
+    mix-blend-mode: screen;
+    animation: glitchEffect 0.7s infinite alternate;
+}
+
+@keyframes glitchEffect {
+    0% {
+        transform: translate(0, 0);
+        clip-path: inset(0% 0% 0% 0%);
+    }
+    20% {
+        transform: translate(-5px, 5px);
+        clip-path: inset(10% 0% 80% 0%);
+    }
+    40% {
+        transform: translate(5px, -5px);
+        clip-path: inset(30% 0% 60% 0%);
+    }
+    60% {
+        transform: translate(-5px, 5px);
+        clip-path: inset(50% 0% 40% 0%);
+    }
+    80% {
+        transform: translate(5px, -5px);
+        clip-path: inset(70% 0% 20% 0%);
+    }
+    100% {
+        transform: translate(0, 0);
+        clip-path: inset(0% 0% 0% 0%);
+    }
+}
+
+
+@keyframes textFadeIn { /* From previous CSS, ensure it's still present */
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-/* Glitch Effect for Title */
-.glitch-effect {
-    animation: glitch 1.5s infinite alternate steps(2, end);
-}
-
-@keyframes glitch {
-    0% { transform: translate(0, 0); text-shadow: 0 0 15px var(--crimson-glow-start); }
-    20% { transform: translate(-2px, 2px); text-shadow: 0 0 15px var(--crimson-glow-start), 2px -2px 0 var(--glitch-color); }
-    40% { transform: translate(-2px, -2px); text-shadow: 0 0 15px var(--crimson-glow-start), -2px 2px 0 var(--glitch-color); }
-    60% { transform: translate(2px, 2px); text-shadow: 0 0 15px var(--crimson-glow-start), 2px 2px 0 var(--glitch-color); }
-    80% { transform: translate(2px, -2px); text-shadow: 0 0 15px var(--crimson-glow-start), -2px -2px 0 var(--glitch-color); }
-    100% { transform: translate(0, 0); text-shadow: 0 0 15px var(--crimson-glow-start); }
 }
 
 .subtitle {
     font-family: 'Orbitron', sans-serif;
     font-size: 1.2em;
-    color: var(--subtle-gray);
+    color: var(--gray);
     margin-bottom: 40px;
     opacity: 0;
     animation: textFadeIn 2s 1.5s forwards;
 }
 
-.pulsing-button {
-    background: linear-gradient(45deg, var(--crimson-red), darken(var(--crimson-red), 15%));
-    color: var(--text-light);
-    border: none;
+/* =========================================
+   BUTTON SYSTEM
+   ========================================= */
+.button {
     padding: 15px 40px;
-    font-size: 1.2em;
-    letter-spacing: 1px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #990000, #ff0000); /* Darker red base */
+    border: none;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 0 0 15px var(--crimson-glow-start);
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
-    opacity: 0;
-    animation: textFadeIn 2s 2s forwards, pulseGlow 2s infinite alternate;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 0 10px var(--crimson-soft),
+        0 0 25px rgba(255, 0, 0, 0.2); /* Initial softer glow */
 }
 
-.pulsing-button:hover {
-    background: linear-gradient(45deg, var(--crimson-glow-end), var(--crimson-red));
-    box-shadow: 0 0 25px var(--crimson-glow-end);
+.button:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 0 20px var(--crimson),
+        0 0 60px var(--crimson-strong); /* Stronger glow on hover */
+}
+
+.button:active {
+    transform: scale(0.95);
+}
+
+/* Specific button styles that build on .button */
+.pulsing-button {
+    animation: pulseButtonGlow 2s infinite alternate; /* Retain pulse animation */
+}
+
+@keyframes pulseButtonGlow {
+    0% { box-shadow: 0 0 10px var(--crimson-soft), 0 0 25px rgba(255, 0, 0, 0.2); }
+    100% { box-shadow: 0 0 20px var(--crimson), 0 0 60px var(--crimson-strong); }
+}
+
+.gray-button {
+    background: var(--gray);
+    color: var(--void);
+    border: none;
+    box-shadow: none; /* Override button shadow for gray button */
+    padding: 10px 20px;
+    font-size: 0.9em;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.gray-button:hover {
+    background: darken(var(--gray), 10%); /* Custom hover for gray */
+    box-shadow: 0 0 10px rgba(119, 119, 119, 0.4);
     transform: translateY(-2px);
 }
 
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 15px var(--crimson-glow-start); }
-    100% { box-shadow: 0 0 25px var(--crimson-glow-end); }
-}
+/* =========================================
+   MAIN CONTENT WRAPPER
+   ========================================= */
 
-/* Main Content Wrapper (your original C2 UI + new sections) */
 #archive-main-wrapper {
     opacity: 0;
     transition: opacity 1s ease-in;
@@ -211,16 +309,19 @@ body {
     opacity: 1;
 }
 
-nav#main-nav {
+/* =========================================
+   GLASS NAVIGATION
+   ========================================= */
+
+nav#main-nav { /* Specificity for main nav */
     position: sticky;
     top: 0;
-    width: 100%;
-    background-color: var(--glass-dark);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(204, 0, 0, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    background: var(--glass);
+    border-bottom: 1px solid rgba(255,0,0,0.2);
     padding: 10px 0;
-    z-index: 999;
+    z-index: 1000; /* Ensure it's above other content */
 }
 
 .nav-container {
@@ -234,7 +335,7 @@ nav#main-nav {
 
 .logo svg {
     fill: none;
-    stroke: var(--crimson-red);
+    stroke: var(--crimson); /* Use new crimson variable */
     stroke-width: 2px;
     width: 40px;
     height: 40px;
@@ -250,34 +351,34 @@ nav#main-nav {
 }
 
 .nav-links a {
-    color: var(--text-light);
     text-decoration: none;
+    color: var(--text-light);
     font-family: 'Orbitron', sans-serif;
-    font-size: 1em;
     text-transform: uppercase;
     position: relative;
     padding-bottom: 5px;
-    transition: color 0.3s ease;
+    transition: 0.3s ease;
 }
 
 .nav-links a::after {
-    content: '';
+    content: "";
     position: absolute;
-    left: 0;
     bottom: 0;
-    width: 0;
+    left: 0;
     height: 2px;
-    background-color: var(--crimson-red);
-    transition: width 0.3s ease;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-    width: 100%;
+    width: 0%;
+    background: var(--crimson);
+    box-shadow: 0 0 10px var(--crimson);
+    transition: 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: var(--crimson-red);
+    color: var(--crimson);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after { /* Active class for current page */
+    width: 100%;
 }
 
 .hamburger-menu {
@@ -290,48 +391,61 @@ nav#main-nav {
 .hamburger-menu .bar {
     width: 25px;
     height: 3px;
-    background-color: var(--crimson-red);
+    background-color: var(--crimson);
     margin: 4px 0;
     transition: 0.4s;
     border-radius: 2px;
 }
 
-/* Data Stream (from original code, re-themed to crimson) */
+/* =========================================
+   DATA STREAM UPGRADE
+   ========================================= */
+
 .data-stream {
-    position: fixed; /* Fixed to cover entire viewport */
+    position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     pointer-events: none;
     overflow: hidden;
-    z-index: -3; /* Behind even particles */
+    z-index: -3; /* Behind ambient texture layers */
 }
 
-.line {
+.data-stream .line { /* Specificity for lines within data-stream */
     position: absolute;
-    background: rgba(204, 0, 0, 0.2); /* Changed to crimson */
-    box-shadow: 0 0 5px rgba(204, 0, 0, 0.8); /* Changed to crimson */
-    animation: stream-flow 20s linear infinite;
+    width: 2px;
+    height: 150px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--crimson),
+        transparent
+    );
+    box-shadow: 0 0 15px var(--crimson);
+    animation: streamFlow 15s linear infinite;
 }
 
-/* Original line styles */
-.line:nth-child(1) { width: 2px; height: 100px; left: 10%; top: -50px; animation-duration: 18s; animation-delay: 0s; }
-.line:nth-child(2) { width: 3px; height: 150px; left: 25%; top: -80px; animation-duration: 22s; animation-delay: 3s; }
-.line:nth-child(3) { width: 1px; height: 70px; left: 40%; top: -30px; animation-duration: 16s; animation-delay: 6s; }
-.line:nth-child(4) { width: 4px; height: 200px; left: 60%; top: -100px; animation-duration: 25s; animation-delay: 9s; }
-.line:nth-child(5) { width: 2px; height: 120px; left: 80%; top: -60px; animation-duration: 19s; animation-delay: 12s; }
-.line:nth-child(6) { width: 3px; height: 180px; left: 50%; top: -90px; animation-duration: 21s; animation-delay: 15s; }
+/* Custom line animations for varied flow */
+.data-stream .line:nth-child(1) { left: 10%; animation-duration: 18s; animation-delay: 0s; }
+.data-stream .line:nth-child(2) { width: 3px; left: 25%; height: 180px; animation-duration: 22s; animation-delay: 3s; }
+.data-stream .line:nth-child(3) { width: 1px; left: 40%; height: 100px; animation-duration: 16s; animation-delay: 6s; }
+.data-stream .line:nth-child(4) { width: 4px; left: 60%; height: 200px; animation-duration: 25s; animation-delay: 9s; }
+.data-stream .line:nth-child(5) { left: 80%; animation-duration: 19s; animation-delay: 12s; }
+.data-stream .line:nth-child(6) { width: 3px; left: 50%; height: 180px; animation-duration: 21s; animation-delay: 15s; }
 
-@keyframes stream-flow {
-    from { transform: translateY(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    to { transform: translateY(100vh); opacity: 0; }
+
+@keyframes streamFlow {
+    from { transform: translateY(-200px); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    to { transform: translateY(120vh); opacity: 0; }
 }
 
+/* =========================================
+   CONTENT SECTIONS - SCROLL FADE
+   ========================================= */
 
-/* Main Content Sections (for scroll-fade) */
 .content-section {
     padding: 80px 20px;
     max-width: 1200px;
@@ -355,93 +469,67 @@ nav#main-nav {
 .section-header h2 {
     font-family: 'Cinzel Decorative', serif;
     font-size: 3em;
-    color: var(--crimson-red);
-    text-shadow: 0 0 10px rgba(204, 0, 0, 0.4);
+    color: var(--crimson);
+    text-shadow: 0 0 10px var(--crimson-soft);
     margin-bottom: 15px;
 }
 
 .section-header p {
     font-family: 'Orbitron', sans-serif;
-    color: var(--subtle-gray);
+    color: var(--gray);
     font-size: 1.1em;
 }
 
-/* Home Section Specific Grid */
-.home-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
-}
+/* =========================================
+   CONTAINER — PREMIUM DEPTH (Applies to .home-card, .license-card, .contact-form, .c2-logs-container)
+   ========================================= */
 
-.home-card {
-    background-color: var(--layered-dark);
-    border: 1px solid rgba(204, 0, 0, 0.3);
-    border-radius: 8px;
-    padding: 30px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.home-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(204, 0, 0, 0.2);
-}
-
-.home-card h3 {
-    font-family: 'Cinzel Decorative', serif;
-    color: var(--crimson-red);
-    font-size: 1.8em;
-    margin-bottom: 15px;
-}
-
-.home-card p {
-    color: var(--subtle-gray);
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
-/* Your Original C2 .container - NOW STYLED AND MOVED TO #logs-section */
 .container {
-    background-color: var(--layered-dark); /* Replaced original container-bg */
-    padding: 50px 60px;
-    border-radius: 15px;
-    box-shadow: 0 0 50px var(--crimson-glow-start), 0 0 20px rgba(204, 0, 0, 0.4); /* Neon glow, now crimson */
-    text-align: center;
-    max-width: 800px;
-    width: 90%;
-    z-index: 10;
+    background: var(--deep-layer);
+    padding: 60px;
+    border-radius: 20px;
+    border: 2px solid var(--crimson);
+    backdrop-filter: blur(8px);
     position: relative;
-    border: 2px solid var(--crimson-red); /* Replaced original primary-color */
-    animation: pulse-border-c2 3s infinite alternate; /* New pulse animation */
+    transition: 0.3s ease;
+    box-shadow:
+        0 0 20px var(--crimson-soft),
+        0 0 60px rgba(255,0,0,0.4);
+}
+
+.container:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow:
+        0 0 30px var(--crimson),
+        0 0 80px rgba(255,0,0,0.6);
+}
+
+/* Specific styling for the original C2 status container */
+.c2-logs-container {
+    padding: 50px 60px; /* Adjust padding to match original */
+    border-radius: 15px; /* Adjust border-radius to match original */
     margin: 50px auto; /* Centering and spacing */
 }
 
-@keyframes pulse-border-c2 { /* New animation for consistency */
-    from { border-color: rgba(204, 0, 0, 0.6); box-shadow: 0 0 50px rgba(204, 0, 0, 0.6), 0 0 20px rgba(204, 0, 0, 0.4); }
-    to { border-color: rgba(204, 0, 0, 0.9); box-shadow: 0 0 60px rgba(204, 0, 0, 0.9), 0 0 30px rgba(204, 0, 0, 0.6); }
-}
-
-.container h1 {
-    font-family: 'Cinzel Decorative', serif; /* Changed from Orbitron */
-    color: var(--crimson-red); /* Changed from primary-color */
+.c2-logs-container h1 { /* Style for H1 inside the logs container */
+    font-family: 'Cinzel Decorative', serif; /* Consistent gothic font */
+    color: var(--crimson);
     margin-bottom: 25px;
     font-size: 2.8em;
-    text-shadow: 0 0 18px var(--crimson-red);
+    text-shadow: 0 0 18px var(--crimson);
     letter-spacing: 2px;
-    animation: none; /* Removed original scan-line, text-shadow is sufficient */
     position: relative;
     overflow: hidden;
     display: inline-block;
 }
 
-.container p {
+.c2-logs-container p { /* Style for paragraphs inside logs container */
     font-size: 1.15em;
     line-height: 1.8;
     margin-bottom: 35px;
     color: var(--text-light);
 }
+
 
 /* Spinner Grid (from original code, re-themed to crimson) */
 .spinner-grid {
@@ -459,9 +547,9 @@ nav#main-nav {
 .cube {
     width: 100%;
     height: 100%;
-    background: linear-gradient(45deg, rgba(204, 0, 0, 0.3), rgba(170, 0, 0, 0.3)); /* Changed to crimson gradient */
-    border: 1px solid var(--crimson-red); /* Changed to crimson */
-    box-shadow: 0 0 10px rgba(204, 0, 0, 0.7); /* Changed to crimson */
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(170, 0, 0, 0.3)); /* Crimson gradient */
+    border: 1px solid var(--crimson);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
     animation: flicker 1.5s infinite alternate;
 }
 .cube:nth-child(2n) { animation-delay: 0.2s; }
@@ -491,21 +579,21 @@ nav#main-nav {
 .footer-info {
     font-family: 'Share Tech Mono', monospace; /* Keep original C2 font for footer */
     font-size: 0.9em;
-    color: rgba(224, 224, 224, 0.6);
+    color: var(--gray);
     margin-top: 50px;
 }
 
 
-/* Beats Grid (formerly C2 Modules Grid) */
+/* Beats Grid */
 .beats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
 
-.beat-card { /* Renamed from c2-module-card */
-    background-color: var(--layered-dark);
-    border: 1px solid var(--crimson-red);
+.beat-card {
+    background-color: var(--deep-layer);
+    border: 1px solid var(--crimson);
     border-radius: 5px;
     padding: 20px;
     position: relative;
@@ -513,14 +601,14 @@ nav#main-nav {
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-.beat-card::before {
+.beat-card::before { /* Soft crimson glow spreads from underneath */
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, var(--crimson-red) 0%, transparent 50%);
+    background: radial-gradient(circle at center, var(--crimson) 0%, transparent 50%);
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 0;
@@ -528,20 +616,20 @@ nav#main-nav {
 
 .beat-card:hover {
     transform: translateY(-8px);
-    border-color: var(--crimson-glow-end);
-    box-shadow: 0 10px 30px rgba(204, 0, 0, 0.3);
+    border-color: var(--crimson-strong);
+    box-shadow: 0 10px 30px var(--crimson-soft);
 }
 
 .beat-card:hover::before {
     opacity: 0.2;
 }
 
-.beat-info { /* Renamed from module-info */
+.beat-info {
     position: relative;
     z-index: 1;
 }
 
-.beat-title { /* Renamed from module-title */
+.beat-title {
     font-family: 'Cinzel Decorative', serif;
     font-size: 1.5em;
     font-weight: 700;
@@ -550,33 +638,33 @@ nav#main-nav {
     margin-bottom: 10px;
 }
 
-.beat-meta { /* Renamed from module-meta */
+.beat-meta {
     display: flex;
     justify-content: space-between;
     font-family: 'Orbitron', sans-serif;
     font-size: 0.9em;
-    color: var(--crimson-red);
+    color: var(--crimson);
     margin-bottom: 15px;
 }
 
-.beat-price { /* Renamed from module-priority */
+.beat-price {
     font-family: 'Orbitron', sans-serif;
     font-size: 1.2em;
-    color: var(--crimson-red);
+    color: var(--crimson);
     font-weight: 700;
     margin-bottom: 20px;
 }
 
-.beat-actions { /* Renamed from module-actions */
+.beat-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.play-button { /* Renamed from activate-button */
+.play-button { /* Custom button for play */
     background: none;
-    border: 1px solid var(--crimson-red);
-    color: var(--crimson-red);
+    border: 1px solid var(--crimson);
+    color: var(--crimson);
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -589,54 +677,54 @@ nav#main-nav {
 
 .play-button svg {
     margin-right: 8px;
-    fill: var(--crimson-red);
+    fill: var(--crimson);
     transition: fill 0.3s ease;
 }
 
 .play-button:hover {
-    background-color: var(--crimson-red);
-    color: var(--layered-dark);
-    box-shadow: 0 0 15px rgba(204, 0, 0, 0.6);
+    background-color: var(--crimson);
+    color: var(--deep-layer);
+    box-shadow: 0 0 15px var(--crimson-soft);
 }
 .play-button:hover svg {
-    fill: var(--layered-dark);
+    fill: var(--deep-layer);
 }
 
 
-.play-button.playing { /* Renamed from active-status */
-    background-color: var(--crimson-glow-end);
-    color: var(--layered-dark);
-    box-shadow: 0 0 20px rgba(204, 0, 0, 0.8);
+.play-button.playing {
+    background-color: var(--crimson-strong);
+    color: var(--deep-layer);
+    box-shadow: 0 0 20px var(--crimson-strong);
     animation: playingPulse 1s infinite alternate;
 }
 .play-button.playing svg {
-    fill: var(--layered-dark);
+    fill: var(--deep-layer);
 }
 
 @keyframes playingPulse {
-    0% { box-shadow: 0 0 10px rgba(204, 0, 0, 0.8); }
-    100% { box-shadow: 0 0 25px rgba(204, 0, 0, 1); }
+    0% { box-shadow: 0 0 10px var(--crimson-strong); }
+    100% { box-shadow: 0 0 25px rgba(255, 0, 0, 1); }
 }
 
-.add-to-cart-btn { /* Renamed from queue-protocol-btn */
-    background: rgba(204, 0, 0, 0.3);
+.add-to-cart-btn { /* Custom button for add to cart */
+    background: rgba(255, 0, 0, 0.3);
     color: var(--text-light);
-    border: 1px solid var(--crimson-red);
+    border: 1px solid var(--crimson);
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
     font-family: 'Orbitron', sans-serif;
     text-transform: uppercase;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 5px rgba(204, 0, 0, 0.2); /* Faint glow */
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.2);
 }
 
 .add-to-cart-btn:hover {
-    background: var(--crimson-red);
-    box-shadow: 0 0 15px rgba(204, 0, 0, 0.6);
+    background: var(--crimson);
+    box-shadow: 0 0 15px var(--crimson-soft);
 }
 
-/* Activity Indicators (formerly Equalizer Bars) */
+/* Activity Indicators */
 .activity-indicator {
     position: absolute;
     bottom: 0;
@@ -660,7 +748,7 @@ nav#main-nav {
 .bar {
     width: 3px;
     height: 2px;
-    background-color: var(--crimson-red);
+    background-color: var(--crimson);
     animation: equalize 1.2s ease-in-out infinite alternate;
     transform-origin: bottom;
 }
@@ -688,11 +776,7 @@ nav#main-nav {
 .contact-form {
     max-width: 600px;
     margin: 40px auto;
-    background-color: var(--layered-dark);
-    border: 1px solid var(--crimson-red);
-    border-radius: 5px;
-    padding: 40px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    /* Already uses .container for base styles */
 }
 
 .contact-form input,
@@ -700,8 +784,8 @@ nav#main-nav {
     width: calc(100% - 20px);
     padding: 15px;
     margin-bottom: 20px;
-    background-color: var(--dark-void);
-    border: 1px solid rgba(204, 0, 0, 0.4);
+    background-color: var(--void);
+    border: 1px solid var(--crimson-soft);
     border-radius: 3px;
     color: var(--text-light);
     font-family: 'Montserrat', sans-serif;
@@ -710,15 +794,15 @@ nav#main-nav {
 
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
-    color: var(--subtle-gray);
+    color: var(--gray);
     opacity: 0.7;
 }
 
 .contact-form input:focus,
 .contact-form textarea:focus {
     outline: none;
-    border-color: var(--crimson-glow-end);
-    box-shadow: 0 0 10px rgba(204, 0, 0, 0.4);
+    border-color: var(--crimson-strong);
+    box-shadow: 0 0 10px var(--crimson-soft);
 }
 
 .contact-form button[type="submit"] {
@@ -732,69 +816,71 @@ nav#main-nav {
 footer {
     text-align: center;
     padding: 40px 20px;
-    background-color: var(--dark-void);
-    border-top: 1px solid rgba(204, 0, 0, 0.2);
-    color: var(--subtle-gray);
+    background-color: var(--void);
+    border-top: 1px solid rgba(255, 0, 0, 0.2);
+    color: var(--gray);
     font-size: 0.9em;
     font-family: 'Orbitron', sans-serif;
     margin-top: 50px;
 }
 
 
-/* Cart Modal */
-#cart-modal { /* Renamed ID */
-    display: none;
+/* =========================================
+   MODAL CINEMATIC DEPTH
+   ========================================= */
+
+.modal {
     position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10000;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden; /* Hide by default */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Delay visibility change */
 }
 
-#cart-modal.active {
-    display: flex;
+.modal.active {
     opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
 }
 
-#cart-modal .modal-content {
-    background-color: var(--layered-dark);
-    border: 1px solid var(--crimson-red);
+.modal-content {
+    background: var(--deep-layer);
     padding: 40px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 0 30px rgba(204, 0, 0, 0.5);
-    transform: translateY(50px);
-    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    border-radius: 15px;
+    border: 1px solid var(--crimson);
+    box-shadow:
+        0 0 20px var(--crimson),
+        0 0 70px rgba(255,0,0,0.5);
+    transform: translateY(40px); /* Initial position for rise animation */
     opacity: 0;
-    position: relative;
+    transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-#cart-modal.active .modal-content {
+.modal.active .modal-content {
     transform: translateY(0);
     opacity: 1;
 }
 
-#cart-modal h2 {
+.modal-content h2 {
     font-family: 'Cinzel Decorative', serif;
-    color: var(--crimson-red);
+    color: var(--crimson);
     text-align: center;
     margin-bottom: 30px;
 }
 
-#cart-items { /* Renamed ID */
+#cart-items {
     margin-bottom: 20px;
-    border-bottom: 1px dashed rgba(136, 136, 136, 0.2);
+    border-bottom: 1px dashed rgba(119, 119, 119, 0.2);
     padding-bottom: 15px;
 }
 
-.cart-item { /* Renamed Class */
+.cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -805,88 +891,77 @@ footer {
 
 .cart-item span {
     font-family: 'Orbitron', sans-serif;
-    color: var(--crimson-red);
+    color: var(--crimson);
     font-weight: 600;
 }
 
-#cart-total { /* Renamed ID */
+#cart-total {
     display: block;
     text-align: right;
     font-size: 1.5em;
     margin-top: 20px;
 }
 
-.checkout-btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1em;
-    background: var(--crimson-glow-end);
-    margin-top: 30px;
-    animation: pulseGlow 1.5s infinite alternate;
-}
 
-.gray-button {
-    background: var(--subtle-gray);
-    color: var(--dark-void);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Orbitron', sans-serif;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    margin-top: 15px;
-    width: 100%;
-    transition: background 0.3s ease;
-}
+/* =========================================
+   ACCESS GRANTED SCREEN — MAXIMUM DRAMA
+   ========================================= */
 
-.gray-button:hover {
-    background: darken(var(--subtle-gray), 10%);
-}
-
-
-/* Access Granted Screen */
 #access-granted-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--dark-void);
+    inset: 0;
+    background-color: var(--void);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100000;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease, visibility 0s linear 0.5s;
     flex-direction: column;
 }
 
 #access-granted-screen.active {
     opacity: 1;
     visibility: visible;
+    transition-delay: 0s;
 }
 
 #access-granted-screen h1 {
-    color: var(--crimson-red);
-    font-size: 6em;
-    text-shadow: 0 0 20px var(--crimson-red);
-    animation: pulseRed 0.8s ease-out forwards;
+    font-size: 6rem;
+    color: var(--crimson);
+    text-shadow:
+        0 0 10px var(--crimson),
+        0 0 30px var(--crimson),
+        0 0 80px var(--crimson);
+    animation: pulse 1s infinite alternate;
 }
 
-@keyframes pulseRed {
-    0% { transform: scale(0.9); opacity: 0; text-shadow: 0 0 5px var(--crimson-red); }
-    50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 30px var(--crimson-red); }
-    100% { transform: scale(1); opacity: 1; text-shadow: 0 0 20px var(--crimson-red); }
+@keyframes pulse {
+    from { transform: scale(0.98); }
+    to { transform: scale(1.02); }
 }
 
-/* Hidden Utility Class */
+/* Hidden utility class */
 .hidden {
     display: none !important;
 }
 
-/* Responsive Design for Mobile */
+/* =========================================
+   PERFORMANCE OPTIMIZATION
+   ========================================= */
+
+.container,
+.button,
+.data-stream .line,
+.beat-card {
+    will-change: transform, opacity, box-shadow;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
 @media (max-width: 768px) {
     #archive-title {
         font-size: 3em;
@@ -894,7 +969,7 @@ footer {
     .subtitle {
         font-size: 1em;
     }
-    .pulsing-button {
+    .button {
         padding: 12px 30px;
         font-size: 1em;
     }
@@ -903,12 +978,12 @@ footer {
         display: none;
         flex-direction: column;
         width: 100%;
-        background-color: var(--glass-dark);
+        background-color: var(--glass);
         position: absolute;
         top: var(--nav-height);
         left: 0;
         padding: 20px 0;
-        border-top: 1px solid rgba(204, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 0, 0, 0.2);
     }
     .nav-links.active {
         display: flex;
@@ -941,6 +1016,14 @@ footer {
 
     .beats-grid, .license-options, .home-grid {
         grid-template-columns: 1fr;
+    }
+
+    .container { /* General container adjustments for mobile */
+        padding: 30px;
+    }
+
+    .c2-logs-container { /* Specific adjustments for the logs container */
+        padding: 30px;
     }
 
     .modal-content {
