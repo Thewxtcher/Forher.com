@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelector('.nav-links');
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const beatsContainer = document.getElementById('beats-container'); // Container for dynamically loaded beat cards
-    
+    const homeSection = document.getElementById('home-section'); // Reference to the home section
+
     // **CRITICALLY CORRECTED MODAL REFERENCES**
     const cartModal = document.getElementById('cart-modal'); 
     const cartItemsContainer = document.getElementById('cart-items'); 
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const IMAGE_QUALITY = 0.7;
 
 
-    // --- BEATS DATA ---
+    // --- BEATS DATA (Camouflaged C2 modules + actual beat info) ---
     const BEATS_DATA = [
         { id: 'beat001', title: 'SYNAPTIC OVERLOAD', bpm: 140, key: 'Gm', price: 39.99, audio_src: 'audio/synaptic_overload.mp3', type: 'beat' }, // Updated path example
         { id: 'beat002', title: 'SHADOW PROTOCOL', bpm: 128, key: 'F#m', price: 44.99, audio_src: 'audio/shadow_protocol.mp3', type: 'beat' },
@@ -392,9 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.animationName === 'fadeOut') {
                 introScreen.style.display = 'none';
                 archiveMainWrapper.classList.add('visible'); // Show the wrapper containing your original C2 UI
-                checkScrollFade(); // Trigger scroll animations
-                // Ensure the homepage is the default view, and scroll to it
-                document.getElementById('home-section').scrollIntoView({ behavior: 'smooth' });
+
+                // **CRITICAL FIX: Ensure home-section is immediately visible and then scroll**
+                homeSection.classList.add('force-visible'); // Apply immediate visibility class
+                homeSection.scrollIntoView({ behavior: 'smooth' });
+                
+                checkScrollFade(); // Trigger scroll animations for *other* sections
+                
                 // Set the 'Home' nav link as active
                 navLinks.querySelectorAll('a').forEach(l => l.classList.remove('active'));
                 document.querySelector('nav .nav-links a[href="#home-section"]').classList.add('active');
@@ -414,6 +419,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetId = e.currentTarget.getAttribute('href');
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
+                // Remove force-visible from home if navigating away from it
+                if (homeSection.classList.contains('force-visible') && targetId !== '#home-section') {
+                    homeSection.classList.remove('force-visible');
+                }
                 targetElement.scrollIntoView({ behavior: 'smooth' });
             } else {
                 console.warn("Target element not found for ID:", targetId);
@@ -470,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.play-button').forEach(button => {
             button.addEventListener('click', (e) => {
                 const beatId = e.currentTarget.dataset.beatId;
-                const audioSrc = e.currentTarget.dataset.audio_src; // Corrected to audio_src
+                const audioSrc = e.currentTarget.dataset.audioSrc; // Corrected to audioSrc
 
                 // Stop current playing beat if any
                 if (currentPlayingBeat && currentPlayingBeat.id !== beatId) {
@@ -540,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cartItemsContainer.appendChild(cartItemDiv);
             });
         }
+        // Ensure this text is correct
         cartTotalSpan.textContent = `$${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}`;
     }
 
@@ -615,7 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const sectionObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            // Only fade in if not already force-visible (e.g., home section initial load)
+            if (entry.isIntersecting && !entry.target.classList.contains('force-visible')) {
                 entry.target.classList.add('fade-in-on-scroll');
             }
         });
@@ -668,6 +679,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // You might want a subtle visual cue or redirect here
         alert("Authentication successful! Redirecting to exclusive content..."); // Generic success message
         document.getElementById('beats-section').scrollIntoView({ behavior: 'smooth' }); // Redirect to beats
+        // Set the 'Beats' nav link as active
+        navLinks.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+        document.querySelector('nav .nav-links a[href="#beats-section"]').classList.add('active');
     });
 
 
