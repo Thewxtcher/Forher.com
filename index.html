@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE ARCHIVE: Sonic Transmissions</title> <!-- Renamed Title -->
-    <link rel="stylesheet" href="style.css"> <!-- Link to the new Archive CSS -->
+    <title>THE ARCHIVE: Sonic Transmissions</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Orbitron:wght@400;700&family=Montserrat:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
@@ -15,12 +15,13 @@
     <section id="intro-screen">
         <!-- Added .glitch class and data-text for the advanced glitch effect -->
         <h1 class="gothic-text glitch" id="archive-title" data-text="ENTER THE ARCHIVE">ENTER THE ARCHIVE</h1>
-        <p class="subtitle">Premium Dark Trap & Cinematic Beats</p> <!-- Renamed Subtitle -->
-        <button id="enter-button" class="button pulsing-button">UNVEIL ARCHIVE</button> <!-- Added .button class -->
+        <p class="subtitle">Premium Dark Trap & Cinematic Beats</p>
+        <button id="enter-button" class="button pulsing-button">UNVEIL ARCHIVE</button>
     </section>
 
     <!-- Main Wrapper for the entire beat store content (becomes visible after intro) -->
-    <div id="archive-main-wrapper" class="hidden">
+    <!-- Initial state is 'hidden' controlled by CSS, then JS removes 'hidden' and adds 'visible' -->
+    <div id="archive-main-wrapper" class="hidden"> 
         <!-- Navigation -->
         <nav id="main-nav">
             <div class="nav-container">
@@ -63,7 +64,7 @@
                 <p>Unlock premium dark trap and cinematic soundscapes. Curated for the elite.</p>
             </div>
             <div class="home-grid">
-                <div class="home-card container hdr-glow"> <!-- Added hdr-glow and container class for consistent styling -->
+                <div class="home-card container hdr-glow">
                     <h3>FEATURED SOUND</h3>
                     <p>Dive into our latest sonic release. Unparalleled depth and power.</p>
                     <button class="button pulsing-button">LISTEN NOW</button>
@@ -71,7 +72,7 @@
                 <div class="home-card container hdr-glow">
                     <h3>EXCLUSIVE ACCESS</h3>
                     <p>Explore hidden vaults and limited editions for true connoisseurs.</p>
-                    <button class="button pulsing-button" id="google-access-button">CONTINUE WITH GOOGLE</button> <!-- NEW: Google Access Button -->
+                    <button class="button pulsing-button" id="google-access-button">CONTINUE WITH GOOGLE</button>
                 </div>
                 <div class="home-card container hdr-glow">
                     <h3>OUR MANIFESTO</h3>
