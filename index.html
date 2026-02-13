@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE ARCHIVE: </title> <!-- Changed title for theme -->
-    <link rel="stylesheet" href="style.css"> <!-- Link to the new Archive CSS -->
+    <title>THE ARCHIVE: Underground Marketplace</title> <!-- Renamed Title -->
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Orbitron:wght@400;700&family=Montserrat:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
@@ -13,14 +13,14 @@
     <div id="ambient-haze"></div>
     <div id="crimson-particles"></div>
 
-    <!-- Intro Screen - The Gateway (Always on top initially) -->
+    <!-- Intro Screen - The Gateway -->
     <section id="intro-screen">
         <h1 class="gothic-text" id="archive-title">ENTER THE ARCHIVE</h1>
-        <p class="subtitle">Secure Operational Protocols Initiated</p>
-        <button id="enter-button" class="pulsing-button">UNVEIL PROTOCOLS</button>
+        <p class="subtitle">Premium Dark Trap & Cinematic Beats</p> <!-- Renamed Subtitle -->
+        <button id="enter-button" class="pulsing-button">UNVEIL ARCHIVE</button> <!-- Renamed Button -->
     </section>
 
-    <!-- Main Wrapper for the entire C2 content - this will become visible after intro -->
+    <!-- Main Wrapper for the entire content -->
     <div id="archive-main-wrapper" class="hidden">
         <!-- Navigation - The Command Console -->
         <nav id="main-nav">
@@ -32,10 +32,10 @@
                     </svg>
                 </div>
                 <ul class="nav-links">
-                    <li><a href="#c2-home-section">Overview</a></li>
-                    <li><a href="#c2-modules-section">Modules</a></li>
-                    <li><a href="#operation-queue">Queue</a></li>
-                    <li><a href="#contact-c2">Conduit</a></li>
+                    <li><a href="#c2-home-section">Home</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#c2-modules-section">Beats</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#operation-queue">Cart</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#contact-c2">Contact</a></li> <!-- Renamed Nav Link -->
                 </ul>
                 <div class="hamburger-menu">
                     <div class="bar"></div>
@@ -45,20 +45,21 @@
             </div>
         </nav>
 
-        <!-- YOUR ORIGINAL HTML BODY CONTENT STARTS HERE (re-wrapped for styling) -->
-        <section id="c2-home-section" class="content-section"> <!-- Added ID and class for scroll-fade -->
-            <div class="data-stream"> <!-- Your original data-stream -->
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-            </div>
+        <!-- Data Stream Background - Your original data-stream -->
+        <div class="data-stream">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
 
+        <!-- Your ORIGINAL C2 HTML BODY CONTENT STARTS HERE (re-wrapped for styling) -->
+        <section id="c2-home-section" class="content-section">
             <div class="container"> <!-- Your original container -->
-                <h1>SatTrack Initiative: Acquiring Target Lock</h1>
-                <p>Establishing secure orbital uplink and calibrating deep-space sensor arrays. This process ensures real-time telemetry streaming and advanced geospatial data acquisition from overwatch satellites.</p>
+                <h1>THE ARCHIVE: Curated Sonic Experience</h1> <!-- Renamed H1 -->
+                <p>Establishing high-fidelity audio stream and calibrating soundscape sensor arrays. This process ensures real-time sonic telemetry and advanced acoustic data acquisition from hidden audio sources.</p> <!-- Renamed Paragraph -->
 
                 <div class="spinner-grid"> <!-- Your original spinner-grid -->
                     <div class="cube"></div><div class="cube"></div><div class="cube"></div>
@@ -67,47 +68,47 @@
                 </div>
 
                 <p class="status-message" id="statusMessage">
-                    Analyzing orbital parameters and synchronizing data streams...
+                    Analyzing audio parameters and synchronizing sound streams...
                 </p>
                 <p class="error-message" id="errorMessage"></p>
                 <p class="footer-info">
-                    &copy; 2024 SatTrack Global Operations. All Rights Reserved. Orbital Telemetry v.2.1.
-                </p>
+                    &copy; 2024 THE ARCHIVE. All Rights Reserved. Sonic Transmissions v.2.1.
+                </p> <!-- Renamed Footer Info -->
             </div>
         </section>
-        <!-- YOUR ORIGINAL HTML BODY CONTENT ENDS HERE -->
+        <!-- YOUR ORIGINAL C2 HTML BODY CONTENT ENDS HERE -->
 
-        <!-- C2 Modules Section - Now a supplementary interactive panel -->
+        <!-- C2 Modules Section - Now the "Beats" section -->
         <section id="c2-modules-section" class="content-section">
             <div class="section-header">
-                <h2>C2 MODULES: OPERATIONAL INTERFACE</h2>
-                <p>Manually re-initiate or queue data extraction protocols for target intelligence.</p>
+                <h2>SONIC ARTIFACTS: RELEASED EDITIONS</h2> <!-- Renamed Header -->
+                <p>Discover and acquire unique sound modules for your next creation.</p> <!-- Renamed Paragraph -->
             </div>
             <div class="c2-modules-grid" id="c2-modules-container">
-                <!-- C2 Module cards will be dynamically loaded here by JavaScript -->
+                <!-- Sonic Artifacts (formerly C2 Module cards) will be dynamically loaded here by JavaScript -->
             </div>
         </section>
 
         <!-- Operation Queue Section - Your "Cart Experience" equivalent -->
         <section id="operation-queue" class="content-section hidden">
             <div class="section-header">
-                <h2>OPERATIONAL LOGS</h2>
-                <p>Review and execute queued C2 directives.</p>
+                <h2>ACQUISITION LOG</h2> <!-- Renamed Header -->
+                <p>Review and finalize your selected sonic acquisitions.</p> <!-- Renamed Paragraph -->
             </div>
-            <p>Your current operational directives are managed via the 'ACQUISITION LOG'.</p>
+            <p>Your current sonic acquisitions are managed via the 'Acquisition Log' modal.</p>
         </section>
 
         <!-- Contact/Conduit Section -->
         <section id="contact-c2" class="content-section">
             <div class="section-header">
-                <h2>SECURE CONDUIT</h2>
-                <p>Establish direct communication with the Archive Architects.</p>
+                <h2>DIRECT CONDUIT</h2> <!-- Renamed Header -->
+                <p>Establish direct communication with the Archive Architects.</p> <!-- Renamed Paragraph -->
             </div>
             <form class="contact-form">
                 <input type="text" placeholder="Designation" required>
-                <input type="email" placeholder="Encrypted Email" required>
-                <textarea placeholder="Transmission Message" rows="5" required></textarea>
-                <button type="submit" class="pulsing-button">TRANSMIT</button>
+                <input type="email" placeholder="Email Address" required> <!-- Renamed Placeholder -->
+                <textarea placeholder="Message to Architects" rows="5" required></textarea> <!-- Renamed Placeholder -->
+                <button type="submit" class="pulsing-button">TRANSMIT MESSAGE</button> <!-- Renamed Button -->
             </form>
         </section>
 
@@ -121,17 +122,17 @@
         <div class="modal-content">
             <h2>ACQUISITION LOG</h2>
             <div id="queue-items">
-                <!-- Queued C2 modules will be dynamically loaded here -->
+                <!-- Queued sonic artifacts will be dynamically loaded here -->
             </div>
-            <p>Total Modules: <span id="queue-total" class="red-text">0</span></p>
-            <button id="execute-queue-button" class="pulsing-button checkout-btn">EXECUTE QUEUED PROTOCOLS</button>
-            <button id="continue-browsing-c2" class="gray-button">CONTINUE PROTOCOL SELECTION</button>
+            <p>Total Acquisitions: <span id="queue-total" class="red-text">0</span></p> <!-- Renamed Text -->
+            <button id="execute-queue-button" class="pulsing-button checkout-btn">INITIATE DOWNLOAD</button> <!-- Renamed Button -->
+            <button id="continue-browsing-c2" class="gray-button">CONTINUE BROWSING</button> <!-- Renamed Button -->
         </div>
     </div>
 
-    <!-- Access Granted Confirmation - The "Checkout Success" equivalent -->
+    <!-- Access Granted Confirmation -->
     <div id="access-granted-screen" class="full-screen-message">
-        <h1 class="gothic-text glitch-effect">ACCESS GRANTED</h1>
+        <h1 class="gothic-text glitch-effect">ACQUISITION GRANTED</h1> <!-- Renamed Title -->
     </div>
 
     <audio id="ambient-audio" loop>
