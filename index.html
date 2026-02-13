@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE ARCHIVE: Underground Marketplace</title> <!-- Renamed Title -->
-    <link rel="stylesheet" href="style.css">
+    <title>THE ARCHIVE: Sonic Transmissions</title> <!-- Renamed Title -->
+    <link rel="stylesheet" href="style.css"> <!-- Link to the new Archive CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Orbitron:wght@400;700&family=Montserrat:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
@@ -20,9 +20,9 @@
         <button id="enter-button" class="pulsing-button">UNVEIL ARCHIVE</button> <!-- Renamed Button -->
     </section>
 
-    <!-- Main Wrapper for the entire content -->
+    <!-- Main Wrapper for the entire beat store content (becomes visible after intro) -->
     <div id="archive-main-wrapper" class="hidden">
-        <!-- Navigation - The Command Console -->
+        <!-- Navigation -->
         <nav id="main-nav">
             <div class="nav-container">
                 <div class="logo">
@@ -32,10 +32,12 @@
                     </svg>
                 </div>
                 <ul class="nav-links">
-                    <li><a href="#c2-home-section">Home</a></li> <!-- Renamed Nav Link -->
-                    <li><a href="#c2-modules-section">Beats</a></li> <!-- Renamed Nav Link -->
-                    <li><a href="#operation-queue">Cart</a></li> <!-- Renamed Nav Link -->
-                    <li><a href="#contact-c2">Contact</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#home-section">Home</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#beats-section">Beats</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#licenses-section">Licenses</a></li>
+                    <li><a href="#cart-section">Cart</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#contact-section">Contact</a></li> <!-- Renamed Nav Link -->
+                    <li><a href="#logs-section">Logs</a></li> <!-- NEW: Logs/Diagnostics Tab -->
                 </ul>
                 <div class="hamburger-menu">
                     <div class="bar"></div>
@@ -45,7 +47,7 @@
             </div>
         </nav>
 
-        <!-- Data Stream Background - Your original data-stream -->
+        <!-- Data Stream Background - Your original data-stream, now fixed to background -->
         <div class="data-stream">
             <div class="line"></div>
             <div class="line"></div>
@@ -55,61 +57,133 @@
             <div class="line"></div>
         </div>
 
-        <!-- Your ORIGINAL C2 HTML BODY CONTENT STARTS HERE (re-wrapped for styling) -->
-        <section id="c2-home-section" class="content-section">
-            <div class="container"> <!-- Your original container -->
-                <h1>THE ARCHIVE: Curated Sonic Experience</h1> <!-- Renamed H1 -->
-                <p>Establishing high-fidelity audio stream and calibrating soundscape sensor arrays. This process ensures real-time sonic telemetry and advanced acoustic data acquisition from hidden audio sources.</p> <!-- Renamed Paragraph -->
+        <!-- NEW: Home Section (The Beat Store Homepage) -->
+        <section id="home-section" class="content-section">
+            <div class="section-header">
+                <h2 class="gothic-text">WELCOME TO THE ARCHIVE</h2>
+                <p>Unlock premium dark trap and cinematic soundscapes. Curated for the elite.</p>
+            </div>
+            <div class="home-grid">
+                <div class="home-card">
+                    <h3>FEATURED SOUND</h3>
+                    <p>Dive into our latest sonic release. Unparalleled depth and power.</p>
+                    <button class="pulsing-button">LISTEN NOW</button>
+                </div>
+                <div class="home-card">
+                    <h3>EXCLUSIVE ACCESS</h3>
+                    <p>Explore hidden vaults and limited editions for true connoisseurs.</p>
+                    <button class="pulsing-button">EXPLORE</button>
+                </div>
+                <div class="home-card">
+                    <h3>OUR MANIFESTO</h3>
+                    <p>Understand the philosophy behind our curated sound artifacts.</p>
+                    <button class="pulsing-button">READ MORE</button>
+                </div>
+            </div>
+        </section>
 
-                <div class="spinner-grid"> <!-- Your original spinner-grid -->
+        <!-- Beats Section -->
+        <section id="beats-section" class="content-section">
+            <div class="section-header">
+                <h2>SONIC ARTIFACTS: RELEASED EDITIONS</h2>
+                <p>Discover and acquire unique sound modules for your next creation.</p>
+            </div>
+            <div class="beats-grid" id="beats-container">
+                <!-- Beat cards will be dynamically loaded here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Licenses Section -->
+        <section id="licenses-section" class="content-section">
+            <div class="section-header">
+                <h2>LICENSING PROTOCOLS</h2>
+                <p>Secure your dominion over the sound.</p>
+            </div>
+            <div class="license-options">
+                <div class="license-card">
+                    <h3>STANDARD ACQUISITION</h3>
+                    <ul>
+                        <li><span class="red-text">MP3 Lease</span></li>
+                        <li>Non-Exclusive Rights</li>
+                        <li>Limited Distribution</li>
+                        <li><span class="red-text">$29.99</span></li>
+                    </ul>
+                    <button class="add-to-cart-btn" data-beat-id="license-standard" data-beat-name="Standard Acquisition" data-beat-price="29.99">SECURE</button>
+                </div>
+                <div class="license-card">
+                    <h3>PREMIUM ACQUISITION</h3>
+                    <ul>
+                        <li><span class="red-text">WAV + MP3 Lease</span></li>
+                        <li>Non-Exclusive Rights</li>
+                        <li>Expanded Distribution</li>
+                        <li>Performance Rights</li>
+                        <li><span class="red-text">$79.99</span></li>
+                    </ul>
+                    <button class="add-to-cart-btn" data-beat-id="license-premium" data-beat-name="Premium Acquisition" data-beat-price="79.99">SECURE</button>
+                </div>
+                <div class="license-card">
+                    <h3>EXCLUSIVE DOMINION</h3>
+                    <ul>
+                        <li><span class="red-text">Trackout + WAV + MP3</span></li>
+                        <li>Exclusive Rights</li>
+                        <li>Unlimited Distribution</li>
+                        <li>Broadcast & Sync Rights</li>
+                        <li><span class="red-text">$499.99+</span></li>
+                    </ul>
+                    <button class="add-to-cart-btn" data-beat-id="license-exclusive" data-beat-name="Exclusive Dominion" data-beat-price="499.99">ACQUIRE</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart-section" class="content-section">
+            <div class="section-header">
+                <h2>ACQUISITION LOG</h2>
+                <p>Review and finalize your selected sonic acquisitions.</p>
+            </div>
+            <p>Your current sonic acquisitions are managed via the 'Acquisition Log' modal.</p>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="content-section">
+            <div class="section-header">
+                <h2>DIRECT CONDUIT</h2>
+                <p>Establish direct communication with the Archive Architects.</p>
+            </div>
+            <form class="contact-form">
+                <input type="text" placeholder="Designation" required>
+                <input type="email" placeholder="Email Address" required>
+                <textarea placeholder="Message to Architects" rows="5" required></textarea>
+                <button type="submit" class="pulsing-button">TRANSMIT MESSAGE</button>
+            </form>
+        </section>
+
+        <!-- NEW: Logs Section (Houses your original C2 status UI) -->
+        <section id="logs-section" class="content-section">
+            <div class="section-header">
+                <h2>SYSTEM DIAGNOSTICS & TELEMETRY</h2>
+                <p>Access the core operational logs of the Archive. Restricted access.</p>
+            </div>
+            <!-- YOUR ORIGINAL C2 CONTAINER, NOW IN THE LOGS SECTION -->
+            <div class="container c2-logs-container"> <!-- Added new class for specific log styling -->
+                <h1>System Status: Real-time Telemetry Stream</h1>
+                <p>Monitoring background processes and network integrity. All systems operational.</p>
+
+                <div class="spinner-grid">
                     <div class="cube"></div><div class="cube"></div><div class="cube"></div>
                     <div class="cube"></div><div class="cube"></div><div class="cube"></div>
                     <div class="cube"></div><div class="cube"></div><div class="cube"></div>
                 </div>
 
                 <p class="status-message" id="statusMessage">
-                    Analyzing audio parameters and synchronizing sound streams...
+                    Core systems nominal. Background acquisition active.
                 </p>
                 <p class="error-message" id="errorMessage"></p>
+                <button id="reinit-c2-button" class="pulsing-button">RE-INITIATE C2 OPERATIONS</button> <!-- NEW: Manual trigger -->
                 <p class="footer-info">
-                    &copy; 2024 THE ARCHIVE. All Rights Reserved. Sonic Transmissions v.2.1.
-                </p> <!-- Renamed Footer Info -->
+                    &copy; 2024 THE ARCHIVE. Operational Telemetry v.2.1.
+                </p>
             </div>
-        </section>
-        <!-- YOUR ORIGINAL C2 HTML BODY CONTENT ENDS HERE -->
-
-        <!-- C2 Modules Section - Now the "Beats" section -->
-        <section id="c2-modules-section" class="content-section">
-            <div class="section-header">
-                <h2>SONIC ARTIFACTS: RELEASED EDITIONS</h2> <!-- Renamed Header -->
-                <p>Discover and acquire unique sound modules for your next creation.</p> <!-- Renamed Paragraph -->
-            </div>
-            <div class="c2-modules-grid" id="c2-modules-container">
-                <!-- Sonic Artifacts (formerly C2 Module cards) will be dynamically loaded here by JavaScript -->
-            </div>
-        </section>
-
-        <!-- Operation Queue Section - Your "Cart Experience" equivalent -->
-        <section id="operation-queue" class="content-section hidden">
-            <div class="section-header">
-                <h2>ACQUISITION LOG</h2> <!-- Renamed Header -->
-                <p>Review and finalize your selected sonic acquisitions.</p> <!-- Renamed Paragraph -->
-            </div>
-            <p>Your current sonic acquisitions are managed via the 'Acquisition Log' modal.</p>
-        </section>
-
-        <!-- Contact/Conduit Section -->
-        <section id="contact-c2" class="content-section">
-            <div class="section-header">
-                <h2>DIRECT CONDUIT</h2> <!-- Renamed Header -->
-                <p>Establish direct communication with the Archive Architects.</p> <!-- Renamed Paragraph -->
-            </div>
-            <form class="contact-form">
-                <input type="text" placeholder="Designation" required>
-                <input type="email" placeholder="Email Address" required> <!-- Renamed Placeholder -->
-                <textarea placeholder="Message to Architects" rows="5" required></textarea> <!-- Renamed Placeholder -->
-                <button type="submit" class="pulsing-button">TRANSMIT MESSAGE</button> <!-- Renamed Button -->
-            </form>
         </section>
 
         <footer>
@@ -117,22 +191,22 @@
         </footer>
     </div> <!-- End of #archive-main-wrapper -->
 
-    <!-- Operation Queue Modal - The "Cart Modal" equivalent -->
-    <div id="operation-queue-modal" class="modal">
+    <!-- **CORRECTED** Cart Modal (formerly operation-queue-modal) -->
+    <div id="cart-modal" class="modal">
         <div class="modal-content">
             <h2>ACQUISITION LOG</h2>
-            <div id="queue-items">
-                <!-- Queued sonic artifacts will be dynamically loaded here -->
+            <div id="cart-items">
+                <!-- Cart items will be dynamically loaded here by JavaScript -->
             </div>
-            <p>Total Acquisitions: <span id="queue-total" class="red-text">0</span></p> <!-- Renamed Text -->
-            <button id="execute-queue-button" class="pulsing-button checkout-btn">INITIATE DOWNLOAD</button> <!-- Renamed Button -->
-            <button id="continue-browsing-c2" class="gray-button">CONTINUE BROWSING</button> <!-- Renamed Button -->
+            <p>Total Acquisitions: <span id="cart-total" class="red-text">$0.00</span></p> <!-- Corrected initial text -->
+            <button id="checkout-button" class="pulsing-button checkout-btn">INITIATE DOWNLOAD</button> <!-- Corrected text -->
+            <button id="continue-browsing" class="gray-button">CONTINUE BROWSING</button> <!-- Corrected text -->
         </div>
     </div>
 
     <!-- Access Granted Confirmation -->
     <div id="access-granted-screen" class="full-screen-message">
-        <h1 class="gothic-text glitch-effect">ACQUISITION GRANTED</h1> <!-- Renamed Title -->
+        <h1 class="gothic-text glitch-effect">ACQUISITION GRANTED</h1>
     </div>
 
     <audio id="ambient-audio" loop>
