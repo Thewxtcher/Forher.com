@@ -41,7 +41,6 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     position: relative;
-    /* Thematic custom cursor from previous iteration, overriding crosshair */
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ff1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg>') 12 12, auto;
 }
 
@@ -293,21 +292,36 @@ body::before {
 }
 
 /* =========================================
-   MAIN CONTENT WRAPPER
+   MAIN CONTENT WRAPPER - CRITICAL FIX HERE
    ========================================= */
 
 #archive-main-wrapper {
-    opacity: 0;
-    transition: opacity 1s ease-in;
-    min-height: 100vh;
-    display: flex;
+    /* Set display properties here so it's always ready for flex layout */
+    display: flex; 
     flex-direction: column;
     width: 100%;
+    min-height: 100vh;
+    position: relative; /* Ensure it stays in document flow for scrolling */
+
+    /* Initial state: hidden, but still maintains layout space */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease-in, visibility 0s linear 1s; /* Fade out then hide */
 }
 
-#archive-main-wrapper.visible {
+#archive-main-wrapper.visible { /* This class will be added by JS */
+    visibility: visible;
     opacity: 1;
+    pointer-events: auto;
+    transition: opacity 1s ease-in, visibility 0s; /* No delay on showing */
 }
+
+/* Hidden utility class - now only affects general elements, not main wrapper */
+.hidden {
+    display: none !important;
+}
+
 
 /* =========================================
    GLASS NAVIGATION
@@ -459,6 +473,7 @@ nav#main-nav { /* Specificity for main nav */
 }
 
 /* NEW: Force immediate visibility for the home section */
+/* This class will be applied by JS upon main content reveal */
 .content-section.force-visible {
     opacity: 1 !important;
     transform: translateY(0) !important;
@@ -483,6 +498,85 @@ nav#main-nav { /* Specificity for main nav */
     color: var(--gray);
     font-size: 1.1em;
 }
+
+/* NEW: Hero Section Styling (Beatstars-like) */
+.hero-section {
+    min-height: calc(100vh - var(--nav-height)); /* Take remaining viewport height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0; /* Adjust padding as nav is sticky */
+    padding-bottom: 0;
+}
+
+.hero-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+.hero-section h2 { /* Specific style for hero title */
+    font-size: 4.5em; /* Larger title */
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px var(--crimson), 0 0 30px var(--crimson-soft);
+}
+
+.hero-subtitle { /* Specific style for hero subtitle */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5em;
+    color: var(--text-light);
+    margin-bottom: 40px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+    background: var(--deep-layer);
+    border: 1px solid var(--crimson);
+    border-radius: 8px;
+    padding: 5px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 15px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 1.1em;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--gray);
+    opacity: 0.8;
+}
+
+.search-button {
+    padding: 10px 25px;
+    border-radius: 6px;
+    font-size: 1.1em;
+    margin-left: 10px;
+    align-self: center;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-actions .button {
+    min-width: 220px;
+    font-size: 1.1em;
+}
+
 
 /* =========================================
    CONTAINER — PREMIUM DEPTH (Applies to .home-card, .license-card, .contact-form, .c2-logs-container)
@@ -946,10 +1040,11 @@ footer {
     to { transform: scale(1.02); }
 }
 
-/* Hidden utility class */
+/* Hidden utility class - now only affects general elements, not main wrapper */
 .hidden {
     display: none !important;
 }
+
 
 /* =========================================
    PERFORMANCE OPTIMIZATION
@@ -1017,6 +1112,20 @@ footer {
     .section-header p {
         font-size: 0.9em;
     }
+    .hero-section h2 {
+        font-size: 3em;
+    }
+    .hero-subtitle {
+        font-size: 1.2em;
+    }
+    .search-button {
+        padding: 10px 15px;
+    }
+    .hero-actions .button {
+        min-width: unset;
+        width: 80%;
+    }
+
 
     .beats-grid, .license-options, .home-grid {
         grid-template-columns: 1fr;
