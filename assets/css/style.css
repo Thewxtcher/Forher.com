@@ -1,0 +1,548 @@
+/*
+    Global Styles & Resets
+    Fonts:
+        - Monospace: UI Monospace for terminal-like text.
+        - Sans-serif: UI Sans-serif for main content.
+    Colors:
+        - Main background: Deep black
+        - Accents: Subtle red/rose, green for terminal
+*/
+
+:root {
+    --color-bg-dark: #050505;
+    --color-text-light: #e0e0e0;
+    --color-accent-red: #cc6666; /* Subtle rose/red */
+    --color-accent-green: #a8d5ba; /* Soft green */
+    --color-glass-bg: rgba(255, 255, 255, 0.04);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-shadow: rgba(0, 0, 0, 0.2);
+    --font-monospace: ui-monospace, 'Fira Code', 'Cascadia Code', monospace;
+    --font-sans-serif: ui-sans-serif, 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    --transition-duration: 0.8s;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden; /* Prevent scroll on boot/transition */
+    font-family: var(--font-sans-serif);
+    color: var(--color-text-light);
+    background-color: var(--color-bg-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* -------------------- Utility Classes -------------------- */
+.hidden {
+    display: none !important;
+}
+
+.fade-target {
+    opacity: 0;
+    transition: opacity var(--transition-duration) ease-in-out;
+}
+
+.fade-in {
+    opacity: 1;
+}
+
+/* -------------------- Background Grid & Noise -------------------- */
+.grid-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(to right, var(--color-glass-border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--color-glass-border) 1px, transparent 1px);
+    background-size: 25px 25px; /* Adjust grid size */
+    opacity: 0.1; /* Subtle grid */
+    z-index: -2;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'%3E%3C/rect%3E%3C/svg%3E");
+    background-size: 100px;
+    opacity: 0.03; /* Very subtle noise */
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* -------------------- Keyframe Animations -------------------- */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes subtle-glow {
+    0% { filter: brightness(1) saturate(1); }
+    50% { filter: brightness(1.2) saturate(1.1); }
+    100% { filter: brightness(1) saturate(1); }
+}
+
+@keyframes pulse-accent-red {
+    0% { text-shadow: 0 0 5px rgba(204, 102, 102, 0.4); }
+    50% { text-shadow: 0 0 15px rgba(204, 102, 102, 0.8); }
+    100% { text-shadow: 0 0 5px rgba(204, 102, 102, 0.4); }
+}
+
+@keyframes pulse-accent-green {
+    0% { text-shadow: 0 0 5px rgba(168, 213, 186, 0.4); }
+    50% { text-shadow: 0 0 15px rgba(168, 213, 186, 0.8); }
+    100% { text-shadow: 0 0 5px rgba(168, 213, 186, 0.4); }
+}
+
+@keyframes root-access-bg-pulse {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 200%; }
+}
+
+/* -------------------- Phase 1: Boot Sequence (index.html) -------------------- */
+.boot-screen {
+    position: fixed; /* Ensures it covers the entire viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-bg-dark);
+    z-index: 100;
+    transition: opacity var(--transition-duration) ease-in-out;
+}
+
+.boot-text {
+    font-family: var(--font-monospace);
+    font-size: 1.2rem;
+    color: var(--color-accent-red);
+    white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 8px rgba(204, 102, 102, 0.6);
+}
+
+/* -------------------- Phase 2: The Letter (index.html) -------------------- */
+.main-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    overflow-y: auto; /* Allow scrolling for content that overflows */
+}
+
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent-red);
+    border-radius: 4px;
+    border: 2px solid var(--color-bg-dark);
+}
+
+.header-metadata {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-align: left;
+    font-family: var(--font-monospace);
+    font-size: 0.8rem;
+    color: var(--color-accent-red);
+    opacity: 0.7;
+    line-height: 1.4;
+    text-shadow: 0 0 3px rgba(204, 102, 102, 0.4);
+    animation: pulse-accent-red 3s infinite ease-in-out;
+}
+
+.glass-panel {
+    background-color: var(--color-glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--color-shadow);
+    padding: 3rem;
+    max-width: 750px;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+    margin-top: 50px; /* Space for the header metadata */
+    margin-bottom: 50px;
+}
+
+.glass-panel h1 {
+    font-family: var(--font-sans-serif);
+    font-size: 2.5rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.glass-panel p {
+    font-family: var(--font-sans-serif);
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-bottom: 1.2rem;
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.glass-panel p:last-of-type {
+    margin-bottom: 2rem;
+}
+
+.glass-panel .signature {
+    font-family: var(--font-sans-serif);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--color-accent-red);
+    text-align: right;
+    margin-top: 2.5rem;
+    margin-bottom: 3rem;
+    line-height: 1.5;
+    text-shadow: 0 0 5px rgba(204, 102, 102, 0.5);
+}
+
+.action-button {
+    display: block;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    background-color: transparent;
+    border: 1px solid var(--color-accent-red);
+    color: var(--color-accent-red);
+    font-family: var(--font-monospace);
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 rgba(204, 102, 102, 0.5);
+}
+
+.action-button:hover,
+.action-button:focus {
+    background-color: var(--color-accent-red);
+    color: var(--color-bg-dark);
+    box-shadow: 0 0 15px rgba(204, 102, 102, 0.7);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+/* -------------------- Phase 3: Terminal Experience (terminal.html) -------------------- */
+.terminal-body {
+    overflow: hidden; /* Ensure terminal is full screen without scrolling */
+}
+
+.terminal-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-dark);
+    padding: 20px;
+    font-family: var(--font-monospace);
+    color: var(--color-accent-green);
+    text-shadow: 0 0 5px rgba(168, 213, 186, 0.5);
+}
+
+.terminal-noise {
+    opacity: 0.05;
+    filter: brightness(1.5);
+}
+
+.terminal-header {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    animation: pulse-accent-green 3s infinite ease-in-out;
+}
+
+.terminal-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    white-space: pre-wrap; /* Preserve formatting, wrap long lines */
+    padding-right: 15px; /* Space for scrollbar */
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
+
+/* Custom Scrollbar for Terminal Output */
+.terminal-output.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-output.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 255, 0, 0.05); /* Greenish track */
+}
+
+.terminal-output.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent-green);
+    border-radius: 4px;
+    border: 2px solid var(--color-bg-dark);
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(168, 213, 186, 0.2);
+    margin-top: auto; /* Push input to bottom */
+}
+
+.prompt-char {
+    color: var(--color-accent-green);
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.terminal-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-accent-green);
+    font-family: var(--font-monospace);
+    font-size: 1.1rem;
+    outline: none;
+    caret-color: var(--color-accent-green); /* Blinking cursor color */
+    padding: 0;
+}
+
+.terminal-input:focus {
+    box-shadow: 0 0 10px rgba(168, 213, 186, 0.6);
+    border-radius: 2px;
+}
+
+.cursor {
+    display: inline-block;
+    color: var(--color-accent-green);
+    animation: blink-cursor 1s step-end infinite;
+    font-size: 1.1rem;
+    margin-left: -0.5rem; /* Overlap with input for a cleaner look */
+    position: relative;
+    top: 1px; /* Align with input text */
+}
+
+/* Terminal Command Specific Styling */
+.terminal-output .command-line {
+    color: var(--color-accent-green);
+}
+
+.terminal-output .response-line {
+    color: var(--color-text-light);
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+}
+
+.terminal-output .error-line {
+    color: var(--color-accent-red);
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+}
+
+.terminal-output .accent-green {
+    color: var(--color-accent-green);
+}
+
+.terminal-output .accent-red {
+    color: var(--color-accent-red);
+}
+
+/* Root Access Overlay */
+.root-access-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.root-access-overlay.fade-in {
+    opacity: 1;
+}
+
+.particle-glow-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top left, rgba(204, 102, 102, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at bottom right, rgba(168, 213, 186, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at center, rgba(204, 102, 102, 0.05) 0%, transparent 15%);
+    background-size: 200% 200%;
+    animation: root-access-bg-pulse 20s infinite alternate ease-in-out;
+    opacity: 0.7;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.root-access-content {
+    text-align: center;
+    color: var(--color-text-light);
+    font-family: var(--font-sans-serif);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.root-access-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--color-accent-red);
+    letter-spacing: 0.05em;
+    animation: pulse-accent-red 4s infinite ease-in-out;
+}
+
+.root-access-message {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+    color: var(--color-accent-green);
+    animation: pulse-accent-green 4s infinite ease-in-out 0.5s;
+}
+
+.root-access-prompt {
+    font-family: var(--font-monospace);
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    opacity: 0.7;
+    animation: blink-cursor 1s step-end infinite;
+}
+
+/* -------------------- Responsive Design -------------------- */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .glass-panel {
+        padding: 2rem;
+        margin-top: 80px; /* Adjust for smaller header */
+    }
+
+    .glass-panel h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .glass-panel p {
+        font-size: 1rem;
+    }
+
+    .glass-panel .signature {
+        font-size: 1.1rem;
+        margin-top: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .action-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .header-metadata {
+        top: 15px;
+        left: 15px;
+        font-size: 0.7rem;
+    }
+
+    .boot-text {
+        font-size: 1rem;
+    }
+
+    .terminal-container {
+        padding: 15px;
+    }
+
+    .terminal-header {
+        font-size: 0.8rem;
+    }
+
+    .terminal-output {
+        font-size: 0.9rem;
+    }
+
+    .terminal-input,
+    .prompt-char,
+    .cursor {
+        font-size: 1rem;
+    }
+
+    .root-access-title {
+        font-size: 2rem;
+    }
+
+    .root-access-message {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .glass-panel {
+        padding: 1.5rem;
+    }
+
+    .glass-panel h1 {
+        font-size: 1.8rem;
+    }
+
+    .glass-panel p {
+        font-size: 0.9rem;
+    }
+
+    .glass-panel .signature {
+        font-size: 1rem;
+    }
+
+    .header-metadata {
+        font-size: 0.65rem;
+    }
+
+    .boot-text {
+        font-size: 0.9rem;
+    }
+}
