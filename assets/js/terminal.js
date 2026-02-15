@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let historyIndex = -1;
     let typingInProgress = false;
 
-    const initialCommand = "type help";
+    const initialCommandText = "type help"; // Text to type out
+    const initialCommandToExecute = "help"; // Actual command to execute after typing
+
     const commands = {
         help: {
             description: "Lists all available commands.",
@@ -78,18 +80,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typingInProgress) return; // Prevent new commands while typing
 
         command = command.trim().toLowerCase();
-        appendCommand(command);
-
-        // Add to history
+        
+        // Add to history (only if not empty and not same as last command)
         if (command !== '' && commandHistory[commandHistory.length - 1] !== command) {
             commandHistory.push(command);
-            historyIndex = commandHistory.length; // Reset history index
+            historyIndex = commandHistory.length; // Reset history index to end
         }
 
-        const cmdHandler = commands[command.replace('.', '_')]?.handler; // Replace dot for JS object key
+        const cmdHandler = commands[command.replace('.', '_')]?.handler; // Replace dot for JS object key lookup
         if (cmdHandler) {
+            // Only append to output if it's not the initial 'type help' simulation
+            if (command !== initialCommandToExecute || !terminalOutput.innerHTML.includes(initialCommandText)) {
+                appendCommand(command);
+            }
             await cmdHandler();
         } else {
+            appendCommand(command); // Append unknown command as well
             await typeText(`Unknown command: '${command}'. Type 'help' for a list of commands.`, 'error-line');
         }
     }
@@ -183,12 +189,14 @@ Build Status:  ACTIVE
     async function cmdRootAccess() {
         rootAccessOverlay.classList.remove('hidden');
         // Trigger reflow to ensure transition works
-        void rootAccessOverlay.offsetWidth;
+        void rootAccessOverlay.offsetWidth; // Force reflow
         rootAccessOverlay.classList.add('fade-in');
         document.body.style.overflow = 'hidden'; // Disable scroll
         terminalInput.disabled = true;
 
-        const handleKeypress = () => {
+        const handleKeypress = (e) => {
+            // Prevent default behavior for arrow keys etc. that might interfere
+            e.preventDefault(); 
             rootAccessOverlay.classList.remove('fade-in');
             rootAccessOverlay.style.transition = 'opacity 0.5s ease-out';
             setTimeout(() => {
@@ -212,23 +220,26 @@ Build Status:  ACTIVE
             if (typingInProgress) return; // Prevent processing input while typing
             executeCommand(terminalInput.value);
             terminalInput.value = ''; // Clear input field
-            historyIndex = commandHistory.length; // Reset history index
+            // historyIndex is reset by executeCommand if a new command is added
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            if (historyIndex > 0) {
-                historyIndex--;
-                terminalInput.value = commandHistory[historyIndex];
-            } else if (historyIndex === 0) {
-                terminalInput.value = commandHistory[historyIndex]; // Show first item again
+            if (commandHistory.length > 0) {
+                if (historyIndex === -1) historyIndex = commandHistory.length; // If just typed, start from last
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                }
             }
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
-            if (historyIndex < commandHistory.length - 1) {
-                historyIndex++;
-                terminalInput.value = commandHistory[historyIndex];
-            } else {
-                historyIndex = commandHistory.length;
-                terminalInput.value = ''; // Clear input if at end of history
+            if (commandHistory.length > 0) {
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else if (historyIndex === commandHistory.length - 1) {
+                    historyIndex = commandHistory.length; // Go past last item to empty
+                    terminalInput.value = '';
+                }
             }
         }
     });
@@ -254,9 +265,19 @@ Build Status:  ACTIVE
     async function initTerminal() {
         terminalInput.focus();
         setupCursorBlink();
-        await typeText(initialCommand);
-        await executeCommand(initialCommand.split(' ')[1]); // Execute 'help' after typing 'type help'
-        terminalInput.value = ''; // Clear typed initial command
+        // Type the initial command, then execute it
+        appendCommand(initialCommandText); // Show "type help" as if typed by user
+        await typeText("Press enter to execute 'help'...", 'response-line');
+        // Wait for user to press enter to execute the 'help' command
+        terminalInput.addEventListener('keydown', function handler(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                terminalOutput.lastChild.remove(); // Remove "Press enter..." line
+                executeCommand(initialCommandToExecute);
+                terminalInput.value = '';
+                terminalInput.removeEventListener('keydown', handler); // Remove self
+            }
+        });
     }
 
     initTerminal();
