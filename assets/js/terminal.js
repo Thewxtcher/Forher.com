@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    alert('terminal.js has started!'); // <<< DIAGNOSTIC ALERT: THIS SHOULD POP UP FIRST.
+
     const terminalOutput = document.getElementById('terminal-output');
     const terminalInput = document.getElementById('terminal-input');
     const terminalContainer = document.getElementById('terminal-container');
@@ -9,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let historyIndex = -1;
     let typingInProgress = false;
 
-    const initialCommandText = "type help"; // Text to type out
-    const initialCommandToExecute = "help"; // Actual command to execute after typing
+    // We'll skip the auto-typing for now with the static test content
+    // const initialCommandText = "type help"; 
+    // const initialCommandToExecute = "help"; 
 
     const commands = {
         help: {
@@ -89,10 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cmdHandler = commands[command.replace('.', '_')]?.handler; // Replace dot for JS object key lookup
         if (cmdHandler) {
-            // Only append to output if it's not the initial 'type help' simulation
-            if (command !== initialCommandToExecute || !terminalOutput.innerHTML.includes(initialCommandText)) {
-                appendCommand(command);
-            }
+            appendCommand(command); // Append to output before executing
             await cmdHandler();
         } else {
             appendCommand(command); // Append unknown command as well
@@ -265,19 +265,8 @@ Build Status:  ACTIVE
     async function initTerminal() {
         terminalInput.focus();
         setupCursorBlink();
-        // Type the initial command, then execute it
-        appendCommand(initialCommandText); // Show "type help" as if typed by user
-        await typeText("Press enter to execute 'help'...", 'response-line');
-        // Wait for user to press enter to execute the 'help' command
-        terminalInput.addEventListener('keydown', function handler(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                terminalOutput.lastChild.remove(); // Remove "Press enter..." line
-                executeCommand(initialCommandToExecute);
-                terminalInput.value = '';
-                terminalInput.removeEventListener('keydown', handler); // Remove self
-            }
-        });
+        // With the static test content, we don't need to auto-type 'help' immediately.
+        // User can now directly type commands into the input field.
     }
 
     initTerminal();
