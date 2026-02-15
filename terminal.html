@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My World // Kiaya</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💾</text></svg>">
+</head>
+<body class="terminal-body">
+
+    <div id="terminal-container" class="terminal-container grid-bg">
+        <div class="noise-overlay terminal-noise"></div>
+        <div class="terminal-header">
+            <span class="accent-green">private instance connected</span><br>
+            <span class="accent-green">user: Kiaya</span><br>
+            <span class="accent-green">nickname: Morning Dove</span><br>
+            <span class="accent-green">security level: trusted</span>
+        </div>
+        <div id="terminal-output" class="terminal-output custom-scrollbar">
+            <!-- DIAGNOSTIC TEST: STATIC CONTENT -->
+            <div class="command-line"><span class="accent-green">TEST: If you see this green text, CSS is loading on terminal.html.</span></div>
+            <div class="response-line">If a popup alert appeared when you landed here, JS is also running.</div>
+            <div class="response-line">If no text appears below this line, then terminal.js is failing before it can type.</div>
+            <div class="command-line"><br></div>
+            <!-- /DIAGNOSTIC TEST -->
+        </div>
+        <div class="terminal-input-line">
+            <span class="prompt-char">></span>
+            <input type="text" id="terminal-input" class="terminal-input" autofocus autocomplete="off" spellcheck="false">
+            <span class="cursor">_</span>
+        </div>
+    </div>
+
+    <!-- Root Access Overlay -->
+    <div id="root-access-overlay" class="root-access-overlay hidden">
+        <div class="particle-glow-bg"></div>
+        <div class="root-access-content">
+            <h2 class="root-access-title">You found the backdoor to my heart.</h2>
+            <p class="root-access-message">There is no encryption between us.</p>
+            <span class="root-access-prompt">Press any key to return...</span>
+        </div>
+    </div>
+
+    <script src="assets/js/terminal.js"></script>
+</body>
+</html>
