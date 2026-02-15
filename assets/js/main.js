@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bootScreen.classList.add('hidden');
             mainContent.classList.remove('hidden');
             // Trigger reflow to ensure transition works
-            void mainContent.offsetWidth;
+            void mainContent.offsetWidth; // Force reflow
             mainContent.classList.add('fade-in');
             document.body.style.overflow = 'auto'; // Allow scrolling on main content
         }, parseInt(getComputedStyle(bootScreen).transitionDuration) * 1000);
